@@ -25,7 +25,7 @@ import java.util.Map;
 public class DiscoveringActivity extends AppCompatActivity implements PasswordDialogFragment.PasswordDialogListener{
 
     private static final int REQUEST_BLUETOOTH = 1;
-    private final BluetoothAdapter BtAdapter = BluetoothAdapter.getDefaultAdapter();
+    private BluetoothAdapter BtAdapter;
     private ArrayList<BluetoothDevice> BtDevices;
     public static ArrayList<MyDevice> SavedBtDevices;
     private BluetoothDevice selectedDevice;
@@ -35,16 +35,34 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discovering);
+        BtAdapter = BluetoothAdapter.getDefaultAdapter();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         SavedBtDevices = new ArrayList<>();
-
         searchBtnOnClick(this);
         bluetoothSearchForDevices();
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        onStart();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BtAdapter.cancelDiscovery();
+        //unregisterReceiver(mReceiver);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        //unregisterReceiver(mReceiver);
         //Helpers.killAppSafely();
     }
 
@@ -59,12 +77,14 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
                 }
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                ListView mListView = findViewById(R.id.listView2);
+                mListView.setAdapter(null);
                 BtDevices = new ArrayList<>();
-                //Helpers.showToast(context, "ACTION_DISCOVERY_STARTED");
+                Helpers.showToast(context, "ACTION_DISCOVERY_STARTED");
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                unregisterReceiver(mReceiver);
-                //Helpers.showToast(context,"ACTION_DISCOVERY_FINISHED");
+                //unregisterReceiver(mReceiver);
+                Helpers.showToast(context,"ACTION_DISCOVERY_FINISHED");
             }
             else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // When discovery finds a device
@@ -90,7 +110,7 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
                         }
                         DialogFragment newFragment = new PasswordDialogFragment();
                         newFragment.show(getFragmentManager(), "PasswordDialogFragment");
-                        unregisterReceiver(mReceiver);
+                        BtAdapter.cancelDiscovery();
 
                         //Helpers.showToast(context, "Device selected:" + textView.getText());
                     }});
@@ -104,11 +124,9 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
             if (!BtAdapter.isEnabled()) {
                 Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBT, REQUEST_BLUETOOTH);
-
             } else {
                 BtAdapter.startDiscovery();
             }
-
             registerReceiver();
     }
 
@@ -127,8 +145,12 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                bluetoothSearchForDevices();
+                if (BtAdapter.isDiscovering())
+                {
+                    BtAdapter.cancelDiscovery();
+                }
+                BtAdapter.startDiscovery();
+                //bluetoothSearchForDevices();
                 //Helpers.showToast(context, "ACTION_DISCOVERY_STARTED");
             }
         });

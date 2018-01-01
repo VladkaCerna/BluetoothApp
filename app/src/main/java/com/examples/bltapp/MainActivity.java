@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+    OnSharedPreferenceChangeListener mListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             displaySavedDevices(this, getSharedPrefs(this));
             startSensorService(this);
             plusBtnOnClick();
-            //minusBtnOnClick(this);
+            minusBtnOnClick(this);
             getPermission(this);
             registerOnSharedPreferenceChangeListener(getSharedPrefs(this), getNewSharedPreferencesListener(this));
         }
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //deleteData(getSharedPrefs(activity));
+                deleteData(getSharedPrefs(activity));
             }
         });
     }
@@ -99,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
                 case PackageManager.PERMISSION_GRANTED:
                     //Toast.makeText(context, "Permission granted.", Toast.LENGTH_LONG).show();
                     break;
-            }}
+            }
+        }
     }
 
     private void displaySavedDevices(Activity activity, SharedPreferences sharedPrefs) {
@@ -114,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private OnSharedPreferenceChangeListener getNewSharedPreferencesListener(final Activity activity) {
-        OnSharedPreferenceChangeListener mListener = new OnSharedPreferenceChangeListener() {
+        mListener = new OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 displaySavedDevices(activity, sharedPreferences);
@@ -125,8 +127,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteData(SharedPreferences sharedPrefs) {
+        Map<String, ?> pairedDevices = sharedPrefs.getAll();
         SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.clear();
+
+        for (Map.Entry<String, ?> entry : pairedDevices.entrySet()) {
+            editor.remove(entry.getKey().toString());
+        }
         editor.commit();
     }
 

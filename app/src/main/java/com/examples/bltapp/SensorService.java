@@ -90,13 +90,13 @@ public class SensorService extends Service implements SensorEventListener {
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_name))
                 .setSmallIcon(R.drawable.ic_action_name)
                 .setContentTitle("Uzamceni plochy")
-                .setContentText("Potahnutim rozbal")
+                .setContentText("Potahnutim rozbal nabidku")
                 //.setContentIntent(pIntent)
                 .setDeleteIntent(dIntent)
                 .setAutoCancel(true)
-                .addAction(R.drawable.ic_action_name, "Yes", pIntent)
-                .addAction(R.drawable.ic_action_name, "No", pIntent)
-                .addAction(R.drawable.ic_action_name, "Pozdeji", pIntent)
+                .addAction(R.drawable.ic_action_name, getString(R.string.ano), pIntent)
+                .addAction(R.drawable.ic_action_name, getString(R.string.ne), pIntent)
+                .addAction(R.drawable.ic_action_name, getString(R.string.pozdeji), pIntent)
                 .build();
 
         try {
