@@ -14,7 +14,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,24 +22,22 @@
             </intent-filter>
         </activity>
         <activity android:name=".DiscoveringActivity" />
-
-        <service
-            android:name=".MySensorService"
-            android:exported="false" />
-
         <activity
             android:name=".NotificationActivity"
-            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" />
 
         <service
             android:name=".SensorService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <receiver
             android:name=".NotificationDismissedReceiver"
-            android:exported="false" >
-        </receiver>
+            android:exported="false"></receiver>
+
+        <service
+            android:name=".BtCommIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

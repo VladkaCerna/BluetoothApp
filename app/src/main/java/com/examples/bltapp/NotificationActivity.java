@@ -57,6 +57,7 @@ public class NotificationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 dialog.cancel();
                 mService.unregisterSensorListener();
+                finish();
             }
         });
         mBtnNo.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +65,7 @@ public class NotificationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 dialog.cancel();
                 mService.registerSensorListener();
+                finish();
             }
         });
         mBtnMaybe.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +74,7 @@ public class NotificationActivity extends AppCompatActivity {
                 dialog.cancel();
                 mService.unregisterSensorListener();
                 mService.showActionButtonsNotification();
+                finish();
             }
         });
     }

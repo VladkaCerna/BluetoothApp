@@ -44,7 +44,17 @@ public class MainActivity extends AppCompatActivity {
             getPermission(this);
             registerOnSharedPreferenceChangeListener(getSharedPrefs(this), getNewSharedPreferencesListener(this));
         }
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     private void searchingWindowShow() {

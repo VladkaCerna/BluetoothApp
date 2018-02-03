@@ -66,6 +66,18 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
         //Helpers.killAppSafely();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent mIntent = new Intent(this, MainActivity.class);
+        startActivity(mIntent);
+    }
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(final Context context, Intent intent) {
             String action = intent.getAction();
