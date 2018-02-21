@@ -15,6 +15,9 @@ import android.widget.Button;
 public class NotificationActivity extends AppCompatActivity {
     SensorService mService;
     boolean mBound = false;
+    public static final String EXTRA_MESSAGE = "message";
+    public static final String MESSAGE = "lock";
+    public static final String ACTION_SEND_MESSAGE = "send_message";
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -57,6 +60,7 @@ public class NotificationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 dialog.cancel();
                 mService.unregisterSensorListener();
+                sendLockMessage();
                 finish();
             }
         });
@@ -78,4 +82,12 @@ public class NotificationActivity extends AppCompatActivity {
             }
         });
     }
+
+    void sendLockMessage(){
+        Intent intent = new Intent(this, BtCommIntentService.class);
+        intent.putExtra(EXTRA_MESSAGE, MESSAGE);
+        intent.setAction(ACTION_SEND_MESSAGE);
+        startService(intent);
+    }
+
 }

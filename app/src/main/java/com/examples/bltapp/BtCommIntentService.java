@@ -20,8 +20,8 @@ public class BtCommIntentService extends IntentService {
     private final UUID MY_UUID = UUID.fromString("60caf2ae-c940-4610-8d06-da4fd80b80ef");
     private final String TAG = null;
 
-    public static final String ACTION_SEND_MESSAGE = "com.examples.bltapp.action.FOO";
-    public static final String EXTRA_MESSAGE = "com.examples.bltapp.extra.PARAM1";
+    public static final String ACTION_SEND_MESSAGE = "send_message";
+    public static final String EXTRA_MESSAGE = "message";
 
     public BtCommIntentService() {
         super("BtCommIntentService");
