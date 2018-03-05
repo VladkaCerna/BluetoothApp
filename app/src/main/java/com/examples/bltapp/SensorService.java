@@ -11,6 +11,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.TriggerEvent;
+import android.hardware.TriggerEventListener;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -18,10 +20,15 @@ import java.lang.reflect.Field;
 
 public class SensorService extends Service implements SensorEventListener {
     private SensorManager mSensorManager;
+    private TriggerEventListener mTriggerEventListener;
     private Sensor mSensor;
+    private Sensor motionSensor;
     private final IBinder mBinder = new LocalBinder();
     private static final String NO_ACTION = "";
     private NotificationManager mNotifyMgr;
+    private long timeStamp;
+    private int steps;
+    private long TWO_SECONDS = 2000;
 
     public SensorService() {
     }
@@ -39,8 +46,21 @@ public class SensorService extends Service implements SensorEventListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
-        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        motionSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
+        mTriggerEventListener = new TriggerEventListener() {
+            @Override
+            public void onTrigger(TriggerEvent event) {
+                //mSensorManager.requestTriggerSensor(mTriggerEventListener, motionSensor);
+                //Intent mIntent = new Intent(SensorService.this, NotificationActivity.class);
+                //startActivity(mIntent);
+            }
+        };
+        mSensorManager.requestTriggerSensor(mTriggerEventListener, motionSensor);
+        registerSensorListener();
+
         //Helpers.showToast(this, "Service turned on");
+        timeStamp = System.nanoTime()/1500000;
+        steps = 0;
         return START_STICKY;
     }
 
@@ -54,11 +74,30 @@ public class SensorService extends Service implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         //Helpers.showToast(this, "Sensor changed.");
-        if (sensorEvent.values[0] == 1) {
-            mSensorManager.unregisterListener(this);
-            Intent mIntent = new Intent(this, NotificationActivity.class);
-            startActivity(mIntent);
+        Sensor sensor = sensorEvent.sensor;
+        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            //if (sensorEvent.values[0] == 1) {
+                long currentTime = System.nanoTime()/1000000;
+                if ((currentTime - timeStamp) < TWO_SECONDS) {
+                    steps++;
+                    if (steps > 1)
+                    {
+                        steps = 0;
+                        mSensorManager.unregisterListener(this);
+                        Intent mIntent = new Intent(this, NotificationActivity.class);
+                        startActivity(mIntent);
+                    }
+                } else {
+                    steps = 0;
+                }
+                timeStamp = currentTime;
+            //}
+        } else if (sensor.getType() == Sensor.TYPE_SIGNIFICANT_MOTION) {
+
+        } else {
+
         }
+
     }
 
     public void unregisterSensorListener() {
