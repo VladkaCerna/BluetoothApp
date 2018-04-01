@@ -3,6 +3,8 @@ package com.examples.bltapp;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
+import android.bluetooth.BluetoothClass.Device;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +33,9 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
     public static ArrayList<MyDevice> SavedBtDevices;
     private BluetoothDevice selectedDevice;
     private String password;
+    private final List<Integer> computerDevices = Arrays.asList(Device.COMPUTER_DESKTOP, Device.COMPUTER_HANDHELD_PC_PDA,
+            Device.COMPUTER_LAPTOP, Device.COMPUTER_PALM_SIZE_PC_PDA, Device.COMPUTER_SERVER, Device.COMPUTER_UNCATEGORIZED,
+            Device.COMPUTER_WEARABLE);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,7 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
 
     @Override
     public void onBackPressed() {
-        Intent mIntent = new Intent(this, MainActivity.class);
+        Intent mIntent = new Intent(this, MyDevicesActivity.class);
         startActivity(mIntent);
     }
 
@@ -102,7 +108,12 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
                 // When discovery finds a device
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                BtDevices.add(device);
+
+                int btDeviceType = device.getBluetoothClass().getDeviceClass();
+                if(computerDevices.contains(btDeviceType)) {
+                    BtDevices.add(device);
+                }
+
                 List<String> mList = new ArrayList<>();
                 for (BluetoothDevice bd: BtDevices)
                 {

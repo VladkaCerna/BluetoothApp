@@ -14,7 +14,7 @@ public class Helpers {
     }
 
     public static void killAppSafely(Context context){
-//        Intent intent = new Intent(context, MainActivity.class);
+//        Intent intent = new Intent(context, MyDevicesActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //        intent.putExtra("LOGOUT", true);
 //        context.startActivity(intent);
