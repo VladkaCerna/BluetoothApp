@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import com.examples.bltapp.R;
-
 
 public class PasswordDialogFragment extends DialogFragment {
 

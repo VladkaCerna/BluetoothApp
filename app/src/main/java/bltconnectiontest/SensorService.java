@@ -16,8 +16,6 @@ import android.hardware.TriggerEventListener;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.examples.bltapp.R;
-
 import java.lang.reflect.Field;
 
 public class SensorService extends Service implements SensorEventListener {

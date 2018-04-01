@@ -21,8 +21,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.examples.bltapp.R;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

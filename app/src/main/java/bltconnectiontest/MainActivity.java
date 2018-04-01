@@ -15,8 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.examples.bltapp.R;
-
 public class MainActivity extends AppCompatActivity {
     OnSharedPreferenceChangeListener mListener;
 
@@ -31,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
             //System.exit(0);
             //Helpers.killAppSafely(this);
         } else {
+            KeyManager keyManager = KeyManager.getKeyManager();
+            keyManager.getPaired(this);
+
             registerDevicesButton(this);
             registerSettingsButton(this);
             startSensorService(this);

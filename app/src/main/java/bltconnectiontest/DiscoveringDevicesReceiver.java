@@ -6,9 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import com.examples.bltapp.R;
 
 import java.util.ArrayList;
 import java.util.List;

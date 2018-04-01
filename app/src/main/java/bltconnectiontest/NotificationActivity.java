@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
-import com.examples.bltapp.R;
-
 public class NotificationActivity extends AppCompatActivity {
     SensorService mService;
     boolean mBound = false;
