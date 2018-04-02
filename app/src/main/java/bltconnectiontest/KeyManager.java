@@ -1,6 +1,10 @@
 package bltconnectiontest;
 
+import android.app.Activity;
+import android.app.UiAutomation;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.util.Log;
 
 import java.util.concurrent.TimeoutException;
 
@@ -23,7 +27,7 @@ public class KeyManager {
         return inst;
     }
 
-    public boolean isPaired(final Context context) {
+    public boolean isPaired(final Context context, BluetoothDevice device) {
         ConfigManager configManager = new ConfigManager();
         Config config = configManager.getConfig(context);
         if (config == null) {
@@ -32,30 +36,34 @@ public class KeyManager {
             config = configManager.getConfig(context);
         }
 
-        if (true || config.getAesKey() == null || config.getAesKey().equals("")) {
+        if (config.getAesKey() == null || config.getAesKey().equals("") || !config.getAddress().equals(device.getAddress())) {
             return false;
         } else {
             return true;
         }
     }
 
-    public void getPaired(final Context context) {
+    public void doPairing(final Context context, final BluetoothDevice device) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                processKeyExchange(context);
+                processKeyExchange(context, device);
             }
         }).start();
     }
 
-    public void processKeyExchange(Context context) {
+    public void processKeyExchange(final Context context, BluetoothDevice device) {
         MessageManager messageManager = MessageManager.GetMananager(context);
         Message rsaKeyResponseMsg;
         Message echoResponseMsg;
 
+        ConfigManager configManager = new ConfigManager();
+        Config config = configManager.getConfig(context);
+        String phoneId = config.getPhoneId();
+
         for(int i = 0; i < 5; i++) {
             //RSA public key exchange
-            Message rsaKeyRequestMsg = messageManager.createRsaKeyRequest();
+            Message rsaKeyRequestMsg = messageManager.createRsaKeyRequest(phoneId);
             messageManager.Send(rsaKeyRequestMsg);
             try {
                 messageManager.timeoutWait(Message.PayloadType.RsaKeyResponse, 3000);
@@ -66,14 +74,14 @@ public class KeyManager {
             messageManager.processMessage(rsaKeyResponseMsg);
 
             //AES key exchange
-            Message aesKeyRequestMsg = messageManager.createAesKeyRequest();
+            Message aesKeyRequestMsg = messageManager.createAesKeyRequest(phoneId);
             messageManager.Send(aesKeyRequestMsg);
 
             //wait until message is delivered
             messageManager.wait(500);
 
             //send echo message
-            Message echoRequestMsg = messageManager.createEchoRequest();
+            Message echoRequestMsg = messageManager.createEchoRequest(phoneId);
             messageManager.Send(echoRequestMsg);
             try {
                 messageManager.timeoutWait(Message.PayloadType.EchoResponse, 3000);
@@ -81,10 +89,16 @@ public class KeyManager {
                 String echoRequestString = ((EchoRequest)echoRequestMsg.getPayload()).getRandomString();
                 String echoResponseString = ((EchoResponse)echoResponseMsg.getPayload()).getRandomString();
                 if(echoRequestString.equals(echoResponseString)) {
-                    ConfigManager configManager = new ConfigManager();
-                    Config config = configManager.getConfig(context);
+                    config.setName(device.getName());
+                    config.setAddress(device.getAddress());
                     config.setAesKey(new String(MessageManager.GetMananager(context).getSecretKeyAes()));
                     configManager.setConfig(context,config);
+
+                    ((Activity)context).runOnUiThread(new Runnable() {
+                        public void run() {
+                            Helpers.showToast(context, "SUCCESSFULLY PAIRED");
+                        }
+                    });
                     return;
                 } else {
                     continue;
@@ -93,6 +107,11 @@ public class KeyManager {
                 continue;
             }
         }
-        //TODO if keyExchange fails
+
+        ((Activity)context).runOnUiThread(new Runnable() {
+            public void run() {
+                Helpers.showToast(context, "UNABLE TO CONNECT");
+            }
+        });
     }
 }

@@ -3,8 +3,6 @@ package bltconnectiontest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -12,22 +10,22 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class MyDevicesActivity extends AppCompatActivity {
-    OnSharedPreferenceChangeListener mListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        displaySavedDevices(this, getSharedPrefs(this));
+        Config config = (new ConfigManager()).getConfig(this);
+        if (config.getName() != null) {
+            displaySavedDevices(this, config);
+        }
         startSensorService(this);
         plusBtnOnClick();
         minusBtnOnClick(this);
-        registerOnSharedPreferenceChangeListener(getSharedPrefs(this), getNewSharedPreferencesListener(this));
     }
 
     @Override
@@ -68,48 +66,25 @@ public class MyDevicesActivity extends AppCompatActivity {
         minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deleteData(getSharedPrefs(activity));
+                ConfigManager configManager = new ConfigManager();
+                Config config = configManager.getConfig(activity);
+                config.setName("");
+                config.setAddress(null);
+                config.setAesKey(null);
+                configManager.setConfig(activity, config);
+
+                displaySavedDevices(activity, config);
             }
         });
     }
 
-    private void displaySavedDevices(Activity activity, SharedPreferences sharedPrefs) {
-        Map<String, ?> pairedDevices = sharedPrefs.getAll();
-        List<String> devicesList = new ArrayList<>();
-        for (Map.Entry<String, ?> entry : pairedDevices.entrySet()) {
-            devicesList.add(entry.getValue().toString());
+    private void displaySavedDevices(Activity activity, Config config) {
+        if (config.getName() != null) {
+            List<String> devicesList = Arrays.asList(config.getName());
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(activity, R.layout.devices_list_view, devicesList);
+            ListView mListView = activity.findViewById(R.id.listView);
+            mListView.setAdapter(arrayAdapter);
         }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(activity, R.layout.devices_list_view, devicesList);
-        ListView mListView = activity.findViewById(R.id.listView);
-        mListView.setAdapter(arrayAdapter);
     }
 
-    private OnSharedPreferenceChangeListener getNewSharedPreferencesListener(final Activity activity) {
-        mListener = new OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                displaySavedDevices(activity, sharedPreferences);
-            }
-        };
-
-        return mListener;
-    }
-
-    private void deleteData(SharedPreferences sharedPrefs) {
-        Map<String, ?> pairedDevices = sharedPrefs.getAll();
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-
-        for (Map.Entry<String, ?> entry : pairedDevices.entrySet()) {
-            editor.remove(entry.getKey().toString());
-        }
-        editor.commit();
-    }
-
-    private void registerOnSharedPreferenceChangeListener(SharedPreferences sharedPrefs, OnSharedPreferenceChangeListener mListener) {
-        sharedPrefs.registerOnSharedPreferenceChangeListener(mListener);
-    }
-
-    private SharedPreferences getSharedPrefs(Activity activity) {
-        return activity.getSharedPreferences("com.examples.bltapp", Context.MODE_PRIVATE);
-    }
 }

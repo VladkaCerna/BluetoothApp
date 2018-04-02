@@ -60,7 +60,7 @@ public class NotificationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 dialog.cancel();
                 mService.unregisterSensorListener();
-                sendLockMessage();
+                sendLockMessage(context);
                 finish();
             }
         });
@@ -83,11 +83,11 @@ public class NotificationActivity extends AppCompatActivity {
         });
     }
 
-    void sendLockMessage(){
-        Intent intent = new Intent(this, BtCommIntentService.class);
-        intent.putExtra(EXTRA_MESSAGE, MESSAGE);
-        intent.setAction(ACTION_SEND_MESSAGE);
-        startService(intent);
+    void sendLockMessage(Context context){
+        String phoneId = new ConfigManager().getConfig(context).getPhoneId();
+        MessageManager messageManager = MessageManager.GetMananager(context);
+        Message message = messageManager.createLockRequest(phoneId);
+        messageManager.Send(message);
     }
 
 }

@@ -98,7 +98,7 @@ public class MessageManager {
         return m;
     }
 
-    public Message createAesKeyRequest() {
+    public Message createAesKeyRequest(String phoneId) {
         Message message = new Message();
 
         //generation of new aes key
@@ -109,40 +109,40 @@ public class MessageManager {
         //final message will be encrypted with rsa public key
         message.setEncryption(Message.MessageFormat.EncryptedRsa);
         message.setType(Message.PayloadType.AesKeyRequest);
-        message.setPayload(new AesKeyRequest(aesKeyBase64, "37b4b4fc-a41b-4d19-9544-4453528be70d"));
+        message.setPayload(new AesKeyRequest(aesKeyBase64, phoneId));
 
         return message;
     }
 
-    public Message createRsaKeyRequest() {
+    public Message createRsaKeyRequest(String phoneId) {
         Message message = new Message(Message.MessageFormat.PlainText);
-        message.setPayload(new RsaKeyRequest("37b4b4fc-a41b-4d19-9544-4453528be70d"));
+        message.setPayload(new RsaKeyRequest(phoneId));
         message.setType(Message.PayloadType.RsaKeyRequest);
 
         return message;
     }
 
-    public Message createEchoRequest() {
+    public Message createEchoRequest(String phoneId) {
         //get random string
         String randomEchoMsg = UUID.randomUUID().toString();
         Message message = new Message(Message.MessageFormat.EncryptedAes);
-        message.setPayload(new EchoRequest("37b4b4fc-a41b-4d19-9544-4453528be70d", randomEchoMsg));
+        message.setPayload(new EchoRequest(phoneId, randomEchoMsg));
         message.setType(Message.PayloadType.EchoRequest);
 
         return message;
     }
 
-    public Message createLockRequest() {
+    public Message createLockRequest(String phoneId) {
         Message message = new Message(Message.MessageFormat.EncryptedAes);
-        message.setPayload(new LockRequest("37b4b4fc-a41b-4d19-9544-4453528be70d"));
+        message.setPayload(new LockRequest(phoneId));
         message.setType(Message.PayloadType.LockRequest);
 
         return message;
     }
 
-    public Message createUnlockRequest() {
+    public Message createUnlockRequest(String phoneId) {
         Message message = new Message(Message.MessageFormat.EncryptedAes);
-        message.setPayload(new LockRequest("37b4b4fc-a41b-4d19-9544-4453528be70d"));
+        message.setPayload(new LockRequest(phoneId));
         message.setType(Message.PayloadType.UnlockRequest);
 
         return message;

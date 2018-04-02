@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.UUID;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -22,17 +23,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_screen);
 
+
         if (!isBtAdapterAvailable()){
             Helpers.showToast(this, "NO BLUETOOTH ADAPTER FOUND.");
             //finish();
             //System.exit(0);
             //Helpers.killAppSafely(this);
         } else {
-            KeyManager keyManager = KeyManager.getKeyManager();
-            if (keyManager.isPaired(this)) {
-            } else {
-                keyManager.getPaired(this);
+            ConfigManager configManager = new ConfigManager();
+            Config config = configManager.getConfig(this);
+            if (config == null || config.getPhoneId() == null) {
+                config = new Config();
+                config.setPhoneId(UUID.randomUUID().toString());
+                configManager.setConfig(this, config);
             }
+            //Helpers.showToast(this, config.getPhoneId());
             registerDevicesButton(this);
             registerSettingsButton(this);
             startSensorService(this);
@@ -67,17 +72,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getPermission(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {  // Only ask for these permissions on runtime when running Android 6.0 or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Only ask for these permissions on runtime when running Android 6.0 or higher
             switch (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 case PackageManager.PERMISSION_DENIED:
-                    //Toast.makeText(context, "Permission denied.", Toast.LENGTH_LONG).show();
                     int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
                     ActivityCompat.requestPermissions(activity,
                             new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
                     break;
                 case PackageManager.PERMISSION_GRANTED:
-                    //Toast.makeText(context, "Permission granted.", Toast.LENGTH_LONG).show();
                     break;
             }
         }

@@ -3,7 +3,6 @@ package bltconnectiontest;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothClass.Device;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -26,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class DiscoveringActivity extends AppCompatActivity implements PasswordDialogFragment.PasswordDialogListener{
+public class DiscoveringActivity extends AppCompatActivity {
 
     private static final int REQUEST_BLUETOOTH = 1;
     private BluetoothAdapter BtAdapter;
@@ -63,7 +62,6 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
     public void onPause() {
         super.onPause();
         BtAdapter.cancelDiscovery();
-        //unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -81,6 +79,7 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
 
     @Override
     public void onBackPressed() {
+        unregisterReceiver(mReceiver);
         Intent mIntent = new Intent(this, MyDevicesActivity.class);
         startActivity(mIntent);
     }
@@ -91,7 +90,6 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
             if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
                 if (state == BluetoothAdapter.STATE_ON) {
-                    //Helpers.showToast(context, "ACTION_STATE_CHANGED: STATE_ON");
                     BtAdapter.startDiscovery();
                 }
             }
@@ -99,11 +97,8 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
                 ListView mListView = findViewById(R.id.listView2);
                 mListView.setAdapter(null);
                 BtDevices = new ArrayList<>();
-                Helpers.showToast(context, "ACTION_DISCOVERY_STARTED");
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                //unregisterReceiver(mReceiver);
-                Helpers.showToast(context,"ACTION_DISCOVERY_FINISHED");
             }
             else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // When discovery finds a device
@@ -132,20 +127,14 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
                             if (d.getName().equals(textView.getText().toString()))
                                 selectedDevice = d;
                         }
+
                         KeyManager keyManager = KeyManager.getKeyManager();
-                        if (keyManager.isPaired(context)) {
+                        if (keyManager.isPaired(context, selectedDevice)) {
                         } else {
-                            keyManager.getPaired(context);
+                            keyManager.doPairing(context, selectedDevice);
                         }
-
-//                        DialogFragment newFragment = new PasswordDialogFragment();
-//                        newFragment.show(getFragmentManager(), "PasswordDialogFragment");
                         BtAdapter.cancelDiscovery();
-
-                        //Helpers.showToast(context, "Device selected:" + textView.getText());
                     }});
-                //Helpers.showToast(context,"Device found = " + device.getName());
-
             }
         }
     };
@@ -180,8 +169,6 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
                     BtAdapter.cancelDiscovery();
                 }
                 BtAdapter.startDiscovery();
-                //bluetoothSearchForDevices();
-                //Helpers.showToast(context, "ACTION_DISCOVERY_STARTED");
             }
         });
     }
@@ -190,53 +177,4 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
         IntentFilter mFilter = getNewFilter();
         registerReceiver(mReceiver, mFilter);
     }
-
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        //Helpers.showToast(this, "Save button");
-        MyDevice deviceToSave = new MyDevice(selectedDevice.getName(),selectedDevice.getAddress(), password);
-        String JSonObject = deviceToSave.toJson();
-        saveData(getSharedPrefs(this), JSonObject, selectedDevice.getName());
-        //Helpers.showToast(this, "Paired device" + selectedDevice.getName() + " " + password);
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        registerReceiver();
-    }
-
-    @Override
-    public void updateResult(String inputText) {
-        this.password = inputText;
-    }
-
-    private void saveData(SharedPreferences sharedPrefs, String deviceInfo, String deviceName) {
-        Editor editor = sharedPrefs.edit();
-        if(containsDevice(sharedPrefs))
-        {
-            editor.clear();
-            editor.putString(deviceInfo, deviceName);
-            editor.commit();
-        } else {
-            editor.putString(deviceInfo, deviceName);
-            editor.commit();
-        }
-    }
-
-    private Boolean containsDevice(SharedPreferences sharedPrefs) {
-        boolean result = true;
-        Map<String, ?> pairedDevices = sharedPrefs.getAll();
-        if(pairedDevices.isEmpty())
-            result = false;
-
-        return result;
-    }
-
-    private SharedPreferences getSharedPrefs(Activity activity) {
-        return activity.getSharedPreferences("com.examples.bltapp", Context.MODE_PRIVATE);
-    }
-
-
-
 }

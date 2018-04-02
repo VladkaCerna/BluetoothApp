@@ -25,10 +25,8 @@ public class DiscoveringDevicesReceiver extends BroadcastReceiver{
             }
         } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
             BtDevices = new ArrayList<>();
-            //Helpers.showToast(context, "ACTION_DISCOVERY_STARTED");
         } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
             context.unregisterReceiver(this);
-            //Helpers.showToast(context,"ACTION_DISCOVERY_FINISHED");
         } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {// When discovery finds a device
             // Get the BluetoothDevice object from the Intent
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
