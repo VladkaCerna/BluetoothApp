@@ -132,6 +132,23 @@ public class MessageManager {
         return message;
     }
 
+    public Message createLockRequest() {
+        Message message = new Message(Message.MessageFormat.EncryptedAes);
+        message.setPayload(new LockRequest("37b4b4fc-a41b-4d19-9544-4453528be70d"));
+        message.setType(Message.PayloadType.LockRequest);
+
+        return message;
+    }
+
+    public Message createUnlockRequest() {
+        Message message = new Message(Message.MessageFormat.EncryptedAes);
+        message.setPayload(new LockRequest("37b4b4fc-a41b-4d19-9544-4453528be70d"));
+        message.setType(Message.PayloadType.UnlockRequest);
+
+        return message;
+    }
+
+
     public void processMessage(Message message) {
         //if message contains rsa public key, save it for further communication
         switch (message.getType()) {

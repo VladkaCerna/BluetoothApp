@@ -10,7 +10,6 @@ import java.util.concurrent.TimeoutException;
 
 public class KeyManager {
 
-    private boolean keyExchanged = false;
     private static KeyManager inst = null;
 
     private KeyManager() {
@@ -24,8 +23,7 @@ public class KeyManager {
         return inst;
     }
 
-
-    public boolean getPaired(final Context context) {
+    public boolean isPaired(final Context context) {
         ConfigManager configManager = new ConfigManager();
         Config config = configManager.getConfig(context);
         if (config == null) {
@@ -34,17 +32,20 @@ public class KeyManager {
             config = configManager.getConfig(context);
         }
 
-        if(true || config.getAesKey() == null || config.getAesKey().equals("")) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    processKeyExchange(context);
-                }
-            }).start();
+        if (true || config.getAesKey() == null || config.getAesKey().equals("")) {
+            return false;
         } else {
-            //keyExchanged = true;
+            return true;
         }
-        return true;
+    }
+
+    public void getPaired(final Context context) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                processKeyExchange(context);
+            }
+        }).start();
     }
 
     public void processKeyExchange(Context context) {
@@ -84,7 +85,6 @@ public class KeyManager {
                     Config config = configManager.getConfig(context);
                     config.setAesKey(new String(MessageManager.GetMananager(context).getSecretKeyAes()));
                     configManager.setConfig(context,config);
-                    keyExchanged = true;
                     return;
                 } else {
                     continue;

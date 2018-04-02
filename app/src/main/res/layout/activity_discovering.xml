@@ -3,10 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    >
 
     <TextView
         android:id="@+id/txtHeadline"
+        android:textColor="#37474F"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -14,14 +17,17 @@
         android:layout_marginBottom="15sp"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_margin="10sp"
         android:text="@string/nalezena_zarizeni"/>
+
     <ImageButton
         android:id="@+id/searchBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/listView2"
-        android:layout_toEndOf="@+id/txtHeadline"
+        android:layout_alignParentEnd="true"
+        android:elevation="5dp"
+        android:stateListAnimator="@null"
+        android:translationZ="5dp"
         app:srcCompat="@android:drawable/ic_menu_search" />
 
     <RelativeLayout
@@ -30,19 +36,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" ></RelativeLayout>
 
-    <ImageButton
-        android:id="@+id/saveBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/InnerRelativeLayout2"
-        android:layout_toEndOf="@+id/InnerRelativeLayout2"
-        app:srcCompat="@android:drawable/ic_menu_save" />
-
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/saveBtn"
-        android:background="@android:color/darker_gray"
+        android:background="#78909C"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/txtHeadline"
         android:id="@+id/listView2" />

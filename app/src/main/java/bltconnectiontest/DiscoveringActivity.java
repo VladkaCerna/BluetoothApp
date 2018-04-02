@@ -132,8 +132,14 @@ public class DiscoveringActivity extends AppCompatActivity implements PasswordDi
                             if (d.getName().equals(textView.getText().toString()))
                                 selectedDevice = d;
                         }
-                        DialogFragment newFragment = new PasswordDialogFragment();
-                        newFragment.show(getFragmentManager(), "PasswordDialogFragment");
+                        KeyManager keyManager = KeyManager.getKeyManager();
+                        if (keyManager.isPaired(context)) {
+                        } else {
+                            keyManager.getPaired(context);
+                        }
+
+//                        DialogFragment newFragment = new PasswordDialogFragment();
+//                        newFragment.show(getFragmentManager(), "PasswordDialogFragment");
                         BtAdapter.cancelDiscovery();
 
                         //Helpers.showToast(context, "Device selected:" + textView.getText());

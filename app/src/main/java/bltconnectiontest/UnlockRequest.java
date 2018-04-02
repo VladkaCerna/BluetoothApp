@@ -1,23 +1,25 @@
 package bltconnectiontest;
 
-import java.util.UUID;
-
 /**
  * Created by cernav1 on 13.3.2018.
  */
 
 //model for unlock request
 public class UnlockRequest implements IRequest {
-    private UUID PhoneId;
+    private String PhoneId;
 
     public UnlockRequest() {
     }
 
-    public UUID getPhoneId() {
+    public UnlockRequest(String phoneId) {
+        PhoneId = phoneId;
+    }
+
+    public String  getPhoneId() {
         return PhoneId;
     }
 
-    public void setPhoneId(UUID phoneId) {
+    public void setPhoneId(String phoneId) {
         PhoneId = phoneId;
     }
 }

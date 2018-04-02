@@ -43,7 +43,6 @@ public class MyDevice {
 
             return jsonObject.toString();
         } catch (JSONException e) {
-            // Auto-generated catch block
             e.printStackTrace();
             return "";
         }

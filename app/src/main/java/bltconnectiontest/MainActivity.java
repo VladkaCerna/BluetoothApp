@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
-    OnSharedPreferenceChangeListener mListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +29,10 @@ public class MainActivity extends AppCompatActivity {
             //Helpers.killAppSafely(this);
         } else {
             KeyManager keyManager = KeyManager.getKeyManager();
-            keyManager.getPaired(this);
-
+            if (keyManager.isPaired(this)) {
+            } else {
+                keyManager.getPaired(this);
+            }
             registerDevicesButton(this);
             registerSettingsButton(this);
             startSensorService(this);

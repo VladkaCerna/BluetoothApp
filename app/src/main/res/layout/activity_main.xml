@@ -2,14 +2,18 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppTheme"
     android:id="@+id/mainView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
     android:layout_marginTop="5dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#CFD8DC">
 
     <TextView
+        style="@style/AppTheme"
+        android:textColor="#37474F"
         android:id="@+id/txtV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,27 +31,34 @@
 
     <ImageButton
         android:id="@+id/plusBtn"
+        android:elevation="5dp"
+        android:translationZ="5dp"
+        android:stateListAnimator="@null"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/InnerRelativeLayout"
-        android:layout_toEndOf="@+id/InnerRelativeLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/listView"
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <ListView
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/plusBtn"
-        android:background="@android:color/darker_gray"
+        android:background="#78909C"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/txtV"
         android:id="@+id/listView" />
 
     <ImageButton
         android:id="@+id/minusBtn"
+        android:elevation="5dp"
+        android:translationZ="5dp"
+        android:stateListAnimator="@null"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/InnerRelativeLayout"
+        android:layout_alignEnd="@+id/listView"
         app:srcCompat="@android:drawable/ic_delete" />
 
 </RelativeLayout>
