@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
     android:layout_marginTop="20dp"
+    android:background="#546E7A"
     android:orientation="vertical">
 
     <TextView
@@ -18,28 +18,34 @@
 
     <Button
         android:id="@+id/btnYes"
+        android:theme="@style/AppTheme.Button"
+        android:elevation="5dp"
+        android:translationZ="2dp"
+        android:stateListAnimator="@null"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="@android:color/white"
         android:layout_marginTop="20dp"
         android:text="@string/ano" />
 
     <Button
         android:id="@+id/btnNo"
+        android:theme="@style/AppTheme.Button"
+        android:elevation="5dp"
+        android:translationZ="2dp"
+        android:stateListAnimator="@null"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="@android:color/white"
         android:layout_marginTop="20dp"
         android:text="@string/ne" />
 
     <Button
         android:id="@+id/btnMaybe"
+        android:theme="@style/AppTheme.Button"
+        android:elevation="5dp"
+        android:translationZ="2dp"
+        android:stateListAnimator="@null"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="@android:color/white"
         android:layout_marginTop="20dp"
         android:text="@string/Pozdeji" />
 </LinearLayout>

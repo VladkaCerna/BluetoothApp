@@ -7,6 +7,10 @@
         <item name="colorPrimaryDark">#37474F</item>
         <item name="colorAccent">#CFD8DC</item>
     </style>
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">#CFD8DC</item>
+        <item name="android:elevation">8dp</item>
+    </style>
     <style name="Theme.AppCompat.Transparent.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

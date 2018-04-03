@@ -15,18 +15,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:theme="@style/AppTheme"
-            android:name=".MyDevicesActivity" />
-        <activity
-            android:name=".MainActivity">
+            android:name=".MyDevicesActivity"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".DiscoveringActivity" />
+        <activity android:name=".DiscoveringActivity" />
         <activity
             android:name=".NotificationActivity"
             android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" />
@@ -38,11 +36,15 @@
 
         <receiver
             android:name=".NotificationDismissedReceiver"
-            android:exported="false"></receiver>
+            android:exported="false" />
 
         <service
             android:name=".BtCommIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
+        <service
+            android:name=".KeepAliveService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

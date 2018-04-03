@@ -66,7 +66,7 @@ public class KeyManager {
             Message rsaKeyRequestMsg = messageManager.createRsaKeyRequest(phoneId);
             messageManager.Send(rsaKeyRequestMsg);
             try {
-                messageManager.timeoutWait(Message.PayloadType.RsaKeyResponse, 3000);
+                messageManager.timeoutWait(Message.PayloadType.RsaKeyResponse, 500);
                 rsaKeyResponseMsg = messageManager.getMessageFromQueue(Message.PayloadType.RsaKeyResponse);
             } catch (TimeoutException e) {
                 continue;
@@ -84,7 +84,7 @@ public class KeyManager {
             Message echoRequestMsg = messageManager.createEchoRequest(phoneId);
             messageManager.Send(echoRequestMsg);
             try {
-                messageManager.timeoutWait(Message.PayloadType.EchoResponse, 3000);
+                messageManager.timeoutWait(Message.PayloadType.EchoResponse, 500);
                 echoResponseMsg = messageManager.getMessageFromQueue(Message.PayloadType.EchoResponse);
                 String echoRequestString = ((EchoRequest)echoRequestMsg.getPayload()).getRandomString();
                 String echoResponseString = ((EchoResponse)echoResponseMsg.getPayload()).getRandomString();

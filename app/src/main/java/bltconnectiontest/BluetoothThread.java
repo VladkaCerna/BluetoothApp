@@ -17,7 +17,7 @@ public class BluetoothThread extends Thread {
     private Context context;
     public BluetoothSocket mSocket;
     public String address = "A4:34:D9:FC:72:17";
-    public BluetoothDevice BtDevice;
+    private BluetoothDevice BtDevice;
     private final UUID MY_UUID = UUID.fromString("60caf2ae-c940-4610-8d06-da4fd80b80ef");
 
     public BluetoothThread() {
@@ -25,6 +25,10 @@ public class BluetoothThread extends Thread {
 
     public BluetoothThread(Context context) {
         this.context = context;
+    }
+
+    public BluetoothDevice getBtDevice() {
+        return BtDevice;
     }
 
     private BluetoothSocket connectAsClient (BluetoothDevice device, UUID uuid) {

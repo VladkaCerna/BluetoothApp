@@ -2,6 +2,7 @@ package bltconnectiontest;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -15,9 +16,6 @@ import android.widget.Button;
 public class NotificationActivity extends AppCompatActivity {
     SensorService mService;
     boolean mBound = false;
-    public static final String EXTRA_MESSAGE = "message";
-    public static final String MESSAGE = "lock";
-    public static final String ACTION_SEND_MESSAGE = "send_message";
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -46,6 +44,15 @@ public class NotificationActivity extends AppCompatActivity {
 
     private void popUpWindowShow(final Context context) {
         AlertDialog.Builder mLockDialog = new AlertDialog.Builder(this);
+
+        mLockDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                mService.registerSensorListener();
+                finish();
+            }
+        });
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         View mView = inflater.inflate(R.layout.lock_dialog, null);
         Button mBtnYes = mView.findViewById(R.id.btnYes);
@@ -89,5 +96,4 @@ public class NotificationActivity extends AppCompatActivity {
         Message message = messageManager.createLockRequest(phoneId);
         messageManager.Send(message);
     }
-
 }

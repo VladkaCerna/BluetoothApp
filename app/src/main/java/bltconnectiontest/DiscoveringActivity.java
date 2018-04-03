@@ -32,7 +32,6 @@ public class DiscoveringActivity extends AppCompatActivity {
     private ArrayList<BluetoothDevice> BtDevices;
     public static ArrayList<MyDevice> SavedBtDevices;
     private BluetoothDevice selectedDevice;
-    private String password;
     private final List<Integer> computerDevices = Arrays.asList(Device.COMPUTER_DESKTOP, Device.COMPUTER_HANDHELD_PC_PDA,
             Device.COMPUTER_LAPTOP, Device.COMPUTER_PALM_SIZE_PC_PDA, Device.COMPUTER_SERVER, Device.COMPUTER_UNCATEGORIZED,
             Device.COMPUTER_WEARABLE);

@@ -1,12 +1,22 @@
 package bltconnectiontest;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Base64;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -34,6 +44,15 @@ public class MessageManager {
         }
 
         return inst;
+    }
+
+    public BluetoothThread getBltThread() {
+        return bltThread;
+    }
+
+    public void Connect(Context context) {
+        bltThread = new BluetoothThread(context);
+        bltThread.start();
     }
 
     public ArrayList<Message> getMessageQue() {
@@ -229,4 +248,5 @@ public class MessageManager {
         }
         return null;
     }
+
 }
