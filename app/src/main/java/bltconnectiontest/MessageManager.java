@@ -1,22 +1,13 @@
 package bltconnectiontest;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Handler;
 import android.util.Base64;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -30,12 +21,13 @@ public class MessageManager {
     private static ArrayList<Message> messageQueue;
     private static byte[] secretKeyAes;
     private static AsymmetricKeyParameter publicKeyRsa;
+    private static Context context;
+//    private static Handler handler;
 
     //implements singleton pattern
     private MessageManager(Context context) {
-        bltThread = new BluetoothThread(context);
-        bltThread.start();
         messageQueue = new ArrayList<>();
+        this.context = context;
     }
 
     public static MessageManager GetMananager(Context context) {
@@ -46,13 +38,20 @@ public class MessageManager {
         return inst;
     }
 
+//    public void startBltThread() {
+//        bltThread = new BluetoothThread(context);
+//        bltThread.start();
+//    }
+
     public BluetoothThread getBltThread() {
         return bltThread;
     }
 
-    public void Connect(Context context) {
+    public void connect() {
         bltThread = new BluetoothThread(context);
         bltThread.start();
+//        handler = new Handler();
+//        handler.postDelayed(runn, 500);
     }
 
     public ArrayList<Message> getMessageQue() {
@@ -63,12 +62,16 @@ public class MessageManager {
         return secretKeyAes;
     }
 
+    public void setSecretKeyAes(byte[] key) {
+        secretKeyAes = key;
+    }
+
     public void Send(Message message) {
         String messageToSend = BuildMessage(message);
 
         if (messageToSend != null) {
             while (true) {
-                if (bltThread.mSocket.isConnected()) {
+                if (bltThread.mSocket != null) {
                     bltThread.send(messageToSend);
                     break;
                 }
@@ -115,6 +118,38 @@ public class MessageManager {
         }
 
         return m;
+    }
+
+    public void processMessage(Message message) {
+        //if message contains rsa public key, save it for further communication
+        switch (message.getType()) {
+            case RsaKeyResponse:
+                RsaCipherizer cipherizer = new RsaCipherizer();
+                publicKeyRsa = cipherizer.publicKeyFromString(((RsaKeyResponse) message.getPayload()).getPublicKey());
+                break;
+
+            case EchoRequest:
+                Message echoResponse = createAnswer(message);
+                Send(echoResponse);
+                break;
+        }
+    }
+
+    public Message createAnswer(Message message) {
+        Message msg = new Message();
+
+
+        switch (message.getType()) {
+            case EchoRequest:
+                String phoneId = ((EchoRequest)message.getPayload()).getPhoneId();
+                String randomString = ((EchoRequest)message.getPayload()).getRandomString();
+                msg = new Message(Message.MessageFormat.EncryptedAes);
+                msg.setType(Message.PayloadType.EchoResponse);
+                msg.setPayload(new EchoResponse(phoneId, randomString));
+                break;
+        }
+
+        return msg;
     }
 
     public Message createAesKeyRequest(String phoneId) {
@@ -165,17 +200,6 @@ public class MessageManager {
         message.setType(Message.PayloadType.UnlockRequest);
 
         return message;
-    }
-
-
-    public void processMessage(Message message) {
-        //if message contains rsa public key, save it for further communication
-        switch (message.getType()) {
-            case RsaKeyResponse:
-                RsaCipherizer cipherizer = new RsaCipherizer();
-                publicKeyRsa = cipherizer.publicKeyFromString(((RsaKeyResponse) message.getPayload()).getPublicKey());
-                break;
-        }
     }
 
     private String BuildMessage(Message message) {
@@ -249,4 +273,14 @@ public class MessageManager {
         return null;
     }
 
+//    private Runnable runn = new Runnable() {
+//        @Override
+//        public void run() {
+//            if(bltThread.mSocket.isConnected()) {
+//                bltThread = new BluetoothThread(context);
+//                bltThread.start();
+//            }
+//            handler.postDelayed(this, 500);
+//        }
+//    };
 }

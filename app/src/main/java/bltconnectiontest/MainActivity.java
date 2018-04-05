@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
             //System.exit(0);
             //Helpers.killAppSafely(this);
         } else {
+            getPermission(this);
+            enableBluetoothAdapter();
             ConfigManager configManager = new ConfigManager();
             Config config = configManager.getConfig(this);
             if (config == null || config.getPhoneId() == null) {
@@ -38,10 +41,18 @@ public class MainActivity extends AppCompatActivity {
                 configManager.setConfig(this, config);
             }
             //Helpers.showToast(this, config.getPhoneId());
+            MessageManager messageManager = MessageManager.GetMananager(this);
+
+            if(config.getAesKey() != null) {
+                byte[] key = Base64.decode(config.getAesKey(), Base64.NO_WRAP);
+                messageManager.setSecretKeyAes(key);
+            }
+
+            messageManager.connect();
+
             registerDevicesButton(this);
             registerSettingsButton(this);
             startSensorService(this);
-            getPermission(this);
         }
     }
 
@@ -65,10 +76,17 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+    private void enableBluetoothAdapter() {
+        BluetoothAdapter BtAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!BtAdapter.isEnabled()) {
+            Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivity(enableBT);
+        }
+    }
+
     private void startSensorService(Context context) {
         Intent mIntent = new Intent(context, SensorService.class);
         startService(mIntent);
-        //finish();
     }
 
     private void getPermission(Activity activity) {

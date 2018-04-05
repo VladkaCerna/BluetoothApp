@@ -27,24 +27,32 @@ public class ReceiveThread extends Thread {
     }
 
     public void run() {
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            //listening if there is any message to be received and processed
-            while (true) {
-                final String response = in.readLine();
-                if(response != null) {
-                    MessageManager messageManager = MessageManager.GetMananager(this.context);
-                    messageManager.Receive(response);
-                }
-
-                if (!socket.isConnected()) {
-                    break;
-                }
-            }
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//
+//            //listening if there is any message to be received and processed
+//            while (true) {
+//                final String response = in.readLine();
+//                if (response != null) {
+//                    MessageManager messageManager = MessageManager.GetMananager(this.context);
+//                    Message msg = messageManager.Receive(response);
+//                    if (msg.getType() == Message.PayloadType.EchoRequest) {
+//                        messageManager.processMessage(msg);
+//                    }
+//
+//                }
+//
+//                if (!socket.isConnected()) {
+//                    break;
+//                }
+//            }
+//            //socket.close();
+//        } catch (IOException e) {
+//            if(e.getMessage().contains("close")) {
+//                return;
+//            }
+//
+//            e.printStackTrace();
+//        }
     }
 }

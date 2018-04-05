@@ -4,8 +4,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.UUID;
 
 /**
@@ -31,22 +36,19 @@ public class BluetoothThread extends Thread {
         return BtDevice;
     }
 
-    private BluetoothSocket connectAsClient (BluetoothDevice device, UUID uuid) {
+    private BluetoothSocket connectAsClient(BluetoothDevice device, UUID uuid) {
         BluetoothSocket socket = null;
 
-        try
-        {
+        try {
             //uses insecure communication
             socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
         }
         return socket;
     }
 
     public void send(String message) {
-        if (mSocket.isConnected())
-        {
+        if (mSocket.isConnected()) {
             new SendThread(mSocket, message).start();
         }
     }
@@ -54,25 +56,33 @@ public class BluetoothThread extends Thread {
     public void run() {
         BluetoothAdapter BtAdapter = BluetoothAdapter.getDefaultAdapter();
         BtDevice = BtAdapter.getRemoteDevice(address);
-        if (BtDevice == null) {
-        } else {
+        if (BtDevice != null) {
+
             mSocket = connectAsClient(BtDevice, MY_UUID);
 
             if (mSocket != null) {
-                try {
-                    mSocket.connect();
+                while (true) {
+                    try {
+                        mSocket.connect();
 
-                    while (true)
-                    {
-                        if(mSocket.isConnected())
-                        {
-                            new ReceiveThread(mSocket, context).start();
-                            break;
+                        try {
+                            BufferedReader in = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
+
+                            //listening if there is any message to be received and processed
+                            while (true) {
+                                final String response = in.readLine();
+                                if (response != null) {
+                                    MessageManager messageManager = MessageManager.GetMananager(this.context);
+                                    Message msg = messageManager.Receive(response);
+                                    if (msg.getType() == Message.PayloadType.EchoRequest) {
+                                        messageManager.processMessage(msg);
+                                    }
+                                }
+                            }
+                        } catch (IOException e) {
                         }
+                    } catch (IOException e) {
                     }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }

@@ -1,7 +1,5 @@
 package bltconnectiontest;
 
-import android.app.Activity;
-import android.app.DialogFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass.Device;
 import android.bluetooth.BluetoothDevice;
@@ -9,10 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,7 +19,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class DiscoveringActivity extends AppCompatActivity {
 
@@ -61,6 +56,7 @@ public class DiscoveringActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         BtAdapter.cancelDiscovery();
+        //unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -72,6 +68,7 @@ public class DiscoveringActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        //unregisterReceiver(mReceiver);
         super.onStop();
         finish();
     }

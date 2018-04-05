@@ -34,6 +34,7 @@
             android:enabled="true"
             android:exported="true" />
 
+
         <receiver
             android:name=".NotificationDismissedReceiver"
             android:exported="false" />
@@ -41,10 +42,6 @@
         <service
             android:name=".BtCommIntentService"
             android:exported="false" />
-        <service
-            android:name=".KeepAliveService"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>

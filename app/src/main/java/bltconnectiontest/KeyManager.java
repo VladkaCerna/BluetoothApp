@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.app.UiAutomation;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
+
+import org.bouncycastle.jcajce.provider.symmetric.ARC4;
 
 import java.util.concurrent.TimeoutException;
 
@@ -66,7 +69,7 @@ public class KeyManager {
             Message rsaKeyRequestMsg = messageManager.createRsaKeyRequest(phoneId);
             messageManager.Send(rsaKeyRequestMsg);
             try {
-                messageManager.timeoutWait(Message.PayloadType.RsaKeyResponse, 500);
+                messageManager.timeoutWait(Message.PayloadType.RsaKeyResponse, 5000);
                 rsaKeyResponseMsg = messageManager.getMessageFromQueue(Message.PayloadType.RsaKeyResponse);
             } catch (TimeoutException e) {
                 continue;
@@ -78,27 +81,28 @@ public class KeyManager {
             messageManager.Send(aesKeyRequestMsg);
 
             //wait until message is delivered
-            messageManager.wait(500);
+            messageManager.wait(1000);
 
             //send echo message
             Message echoRequestMsg = messageManager.createEchoRequest(phoneId);
             messageManager.Send(echoRequestMsg);
             try {
-                messageManager.timeoutWait(Message.PayloadType.EchoResponse, 500);
+                messageManager.timeoutWait(Message.PayloadType.EchoResponse, 5000);
                 echoResponseMsg = messageManager.getMessageFromQueue(Message.PayloadType.EchoResponse);
                 String echoRequestString = ((EchoRequest)echoRequestMsg.getPayload()).getRandomString();
                 String echoResponseString = ((EchoResponse)echoResponseMsg.getPayload()).getRandomString();
                 if(echoRequestString.equals(echoResponseString)) {
                     config.setName(device.getName());
                     config.setAddress(device.getAddress());
-                    config.setAesKey(new String(MessageManager.GetMananager(context).getSecretKeyAes()));
+                    byte[] key = MessageManager.GetMananager(context).getSecretKeyAes();
+                    config.setAesKey(Base64.encodeToString(key, Base64.NO_WRAP));
                     configManager.setConfig(context,config);
 
-                    ((Activity)context).runOnUiThread(new Runnable() {
-                        public void run() {
-                            Helpers.showToast(context, "SUCCESSFULLY PAIRED");
-                        }
-                    });
+//                    ((Activity)context).runOnUiThread(new Runnable() {
+//                        public void run() {
+//                            Helpers.showToast(context, "SUCCESSFULLY PAIRED");
+//                        }
+//                    });
                     return;
                 } else {
                     continue;

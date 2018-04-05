@@ -6,9 +6,14 @@ import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -23,10 +28,14 @@ public class ConfigManager {
     }
 
     public void setConfig(Context context, Config config) {
-        Gson gson = new Gson();
+//        Gson gson = new Gson();
+//
+//
+//        //if file does not exist, create new one
+//        String configSerialized = gson.toJson(config);
 
-        //if file does not exist, create new one
-        String configSerialized = gson.toJson(config);
+        JsonSerializer serializer = new JsonSerializer();
+        String configSerialized = serializer.SerializeToJson(config);
         if (!Arrays.asList(context.fileList()).contains(FILE_NAME)){
             new File(context.getFilesDir(), FILE_NAME);
         }
@@ -35,7 +44,9 @@ public class ConfigManager {
         FileOutputStream fileOutputStream;
         try {
             fileOutputStream = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-            fileOutputStream.write(configSerialized.getBytes());
+            fileOutputStream.write(configSerialized.getBytes(StandardCharsets.UTF_8));
+            fileOutputStream.flush();
+            fileOutputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,10 +63,15 @@ public class ConfigManager {
             String path = file.getAbsolutePath();
             Config config = new Config();
             try {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
-                Gson gson = new Gson();
-                config = gson.fromJson(bufferedReader, Config.class);
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+                String line = bufferedReader.readLine();
+//                Gson gson = new Gson();
+//                config = gson.fromJson(bufferedReader, Config.class);
+                JsonSerializer serializer = new JsonSerializer();
+                config = (Config) serializer.DeserializeFromJson(line, Config.class);
             } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return config;
