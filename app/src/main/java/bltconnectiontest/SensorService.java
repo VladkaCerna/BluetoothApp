@@ -100,6 +100,12 @@ public class SensorService extends Service implements SensorEventListener {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterSensorListener();
+    }
+
     public void unregisterSensorListener() {
         mSensorManager.unregisterListener(this);
     }
@@ -120,51 +126,95 @@ public class SensorService extends Service implements SensorEventListener {
         }
     }
 
-    public void showActionButtonsNotification() {
-        Intent mIntent = new Intent(this, NotificationActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(this, 0, mIntent, 0);
-        PendingIntent dIntent = createOnDismissedIntent(this, 1);
+//    public void showLaterNotification() {
+//        final int notificationId = 0;
+//        Intent serviceIntent = new Intent(this, LockIntentService.class);
+//        serviceIntent.putExtra("ID", notificationId);
+//        PendingIntent actionIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
+//        PendingIntent deleteIntent = createOnDismissedIntentLaterBtn(this, notificationId);
+//
+//        Notification mNotification  = new Notification.Builder(this)
+//                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_name))
+//                .setSmallIcon(R.drawable.ic_action_name)
+//                .setContentTitle(getString(R.string.lock_desktop))
+//                .setContentText(getString(R.string.pull_see_options))
+//                .setContentIntent(actionIntent)
+//                .setDeleteIntent(deleteIntent)
+//                .setAutoCancel(true)
+//                .addAction(R.drawable.ic_action_name, getString(R.string.ano), actionIntent)
+//                .build();
+//
+//        try {
+//            Class miuiNotificationClass = Class.forName("android.app.MiuiNotification");
+//            Object miuiNotification = miuiNotificationClass.newInstance();
+//            Field field = miuiNotification.getClass().getDeclaredField("customizedIcon");
+//            field.setAccessible(true);
+//
+//            field.set(miuiNotification, true);
+//            field = mNotification.getClass().getField("extraNotification");
+//            field.setAccessible(true);
+//
+//            field.set(mNotification, miuiNotification);
+//        } catch (Exception e) {
+//        }
+//
+//        mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        mNotifyMgr.notify(notificationId, mNotification);
+//    }
 
-        Notification mNotification  = new Notification.Builder(this)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_name))
-                .setSmallIcon(R.drawable.ic_action_name)
-                .setContentTitle("Uzamceni plochy")
-                .setContentText("Potahnutim rozbal nabidku")
-                //.setContentIntent(pIntent)
-                .setDeleteIntent(dIntent)
-                .setAutoCancel(true)
-                .addAction(R.drawable.ic_action_name, getString(R.string.ano), pIntent)
-                .addAction(R.drawable.ic_action_name, getString(R.string.ne), pIntent)
-                .addAction(R.drawable.ic_action_name, getString(R.string.pozdeji), pIntent)
-                .build();
+//    public void showUnlockNotification() {
+//        final int notificationId = 1;
+//        Intent serviceIntent = new Intent(this, UnlockIntentService.class);
+//        serviceIntent.putExtra("ID", notificationId);
+//        PendingIntent actionIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
+//        PendingIntent deleteIntent = createOnDismissedIntentUnlock(this, notificationId);
+//
+//        Notification mNotification  = new Notification.Builder(this)
+//                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_name))
+//                .setSmallIcon(R.drawable.ic_action_name)
+//                .setContentTitle(getString(R.string.unlock))
+//                .setDeleteIntent(deleteIntent)
+//                .setAutoCancel(true)
+//                .addAction(R.drawable.ic_action_name, getString(R.string.ano), actionIntent)
+//                .build();
+//
+//        try {
+//            Class miuiNotificationClass = Class.forName("android.app.MiuiNotification");
+//            Object miuiNotification = miuiNotificationClass.newInstance();
+//            Field field = miuiNotification.getClass().getDeclaredField("customizedIcon");
+//            field.setAccessible(true);
+//
+//            field.set(miuiNotification, true);
+//            field = mNotification.getClass().getField("extraNotification");
+//            field.setAccessible(true);
+//
+//            field.set(mNotification, miuiNotification);
+//        } catch (Exception e) {
+//        }
+//
+//        mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        mNotifyMgr.notify(notificationId, mNotification);
+//    }
 
-        try {
-            Class miuiNotificationClass = Class.forName("android.app.MiuiNotification");
-            Object miuiNotification = miuiNotificationClass.newInstance();
-            Field field = miuiNotification.getClass().getDeclaredField("customizedIcon");
-            field.setAccessible(true);
+//    private PendingIntent createOnDismissedIntentLaterBtn(Context context, int notificationId) {
+//        Intent intent = new Intent(context, NotificationDismissedReceiver.class);
+//        intent.putExtra("notificationId", notificationId);
+//
+//        PendingIntent pendingIntent =
+//                PendingIntent.getBroadcast(context.getApplicationContext(),
+//                        notificationId, intent, 0);
+//        return pendingIntent;
+//    }
 
-            field.set(miuiNotification, true);
-            field = mNotification.getClass().getField("extraNotification");
-            field.setAccessible(true);
-
-            field.set(mNotification, miuiNotification);
-        } catch (Exception e) {
-        }
-
-        mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        mNotifyMgr.notify(0, mNotification);
-    }
-
-    private PendingIntent createOnDismissedIntent(Context context, int notificationId) {
-        Intent intent = new Intent(context, NotificationDismissedReceiver.class);
-        intent.putExtra("notificationId", notificationId);
-
-        PendingIntent pendingIntent =
-                PendingIntent.getBroadcast(context.getApplicationContext(),
-                        notificationId, intent, 0);
-        return pendingIntent;
-    }
+//    private PendingIntent createOnDismissedIntentUnlock(Context context, int notificationId) {
+//        Intent intent = new Intent(context, UnlockNotificationDismissedReceiver.class);
+//        intent.putExtra("notificationId", notificationId);
+//
+//        PendingIntent pendingIntent =
+//                PendingIntent.getBroadcast(context.getApplicationContext(),
+//                        notificationId, intent, 0);
+//        return pendingIntent;
+//    }
 
 
 

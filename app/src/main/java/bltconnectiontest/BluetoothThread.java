@@ -1,5 +1,6 @@
 package bltconnectiontest;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -24,6 +25,7 @@ public class BluetoothThread extends Thread {
     public String address = "A4:34:D9:FC:72:17";
     private BluetoothDevice BtDevice;
     private final UUID MY_UUID = UUID.fromString("60caf2ae-c940-4610-8d06-da4fd80b80ef");
+    private boolean shutdownFlag = false;
 
     public BluetoothThread() {
     }
@@ -62,19 +64,26 @@ public class BluetoothThread extends Thread {
 
             if (mSocket != null) {
                 while (true) {
+
                     try {
+                        if (shutdownFlag) {
+                            shutdownFlag = false;
+                            mSocket.close();
+                            return;
+                        }
                         mSocket.connect();
 
                         try {
                             BufferedReader in = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
 
                             //listening if there is any message to be received and processed
-                            while (true) {
+                            while (!shutdownFlag) {
+
                                 final String response = in.readLine();
                                 if (response != null) {
                                     MessageManager messageManager = MessageManager.GetMananager(this.context);
                                     Message msg = messageManager.Receive(response);
-                                    if (msg.getType() == Message.PayloadType.EchoRequest) {
+                                    if (msg.getType() == Message.PayloadType.EchoRequest || msg.getType() == Message.PayloadType.RsaKeyRequest) {
                                         messageManager.processMessage(msg);
                                     }
                                 }
@@ -86,5 +95,13 @@ public class BluetoothThread extends Thread {
                 }
             }
         }
+    }
+
+    public boolean isShutdownFlag() {
+        return shutdownFlag;
+    }
+
+    public void setShutdownFlag(boolean shutdownFlag) {
+        this.shutdownFlag = shutdownFlag;
     }
 }

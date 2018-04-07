@@ -65,9 +65,12 @@ public class NotificationActivity extends AppCompatActivity {
         mBtnYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.cancel();
                 mService.unregisterSensorListener();
-                sendLockMessage(context);
+                dialog.cancel();
+                sendLockRequest(context);
+                Intent intent = new Intent(context, LockIntentService.class);
+                context.startService(intent);
+                //mService.showUnlockNotification();
                 finish();
             }
         });
@@ -75,7 +78,7 @@ public class NotificationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 dialog.cancel();
-                mService.registerSensorListener();
+                //mService.registerSensorListener();
                 finish();
             }
         });
@@ -84,13 +87,15 @@ public class NotificationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 dialog.cancel();
                 mService.unregisterSensorListener();
-                mService.showActionButtonsNotification();
+                Intent intent = new Intent(context, LaterNotificationIntentService.class);
+                context.startService(intent);
+                //mService.showLaterNotification();
                 finish();
             }
         });
     }
 
-    void sendLockMessage(Context context){
+    void sendLockRequest(Context context){
         String phoneId = new ConfigManager().getConfig(context).getPhoneId();
         MessageManager messageManager = MessageManager.GetMananager(context);
         Message message = messageManager.createLockRequest(phoneId);

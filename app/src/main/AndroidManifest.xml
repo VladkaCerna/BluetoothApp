@@ -34,7 +34,6 @@
             android:enabled="true"
             android:exported="true" />
 
-
         <receiver
             android:name=".NotificationDismissedReceiver"
             android:exported="false" />
@@ -42,6 +41,18 @@
         <service
             android:name=".BtCommIntentService"
             android:exported="false" />
+        <service
+            android:name=".UnlockIntentService"
+            android:exported="false" />
+        <service
+            android:name=".LockIntentService"
+            android:exported="false" />
+        <service
+            android:name=".UnlockNotificationIntentService"
+            android:exported="false" />
+        <service
+            android:name=".LaterNotificationIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

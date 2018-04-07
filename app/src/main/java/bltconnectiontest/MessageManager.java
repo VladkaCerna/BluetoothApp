@@ -6,6 +6,8 @@ import android.util.Base64;
 
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 
+import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -16,7 +18,7 @@ import java.util.concurrent.TimeoutException;
  */
 
 public class MessageManager {
-    private static BluetoothThread bltThread;
+    private static BluetoothThread bltThread = null;
     private static MessageManager inst = null;
     private static ArrayList<Message> messageQueue;
     private static byte[] secretKeyAes;
@@ -48,10 +50,23 @@ public class MessageManager {
     }
 
     public void connect() {
-        bltThread = new BluetoothThread(context);
-        bltThread.start();
-//        handler = new Handler();
-//        handler.postDelayed(runn, 500);
+        if(bltThread == null) {
+            bltThread = new BluetoothThread(context);
+            bltThread.start();
+        }
+    }
+
+    public void disconnect() {
+            bltThread.setShutdownFlag(true);
+            try {
+                bltThread.mSocket.close();
+                bltThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bltThread = null;
     }
 
     public ArrayList<Message> getMessageQue() {
@@ -97,8 +112,10 @@ public class MessageManager {
         //decrypt or convert byte[] to string
         switch (Message .MessageFormat.valueOf(messageByteExtended[0])) {
             case EncryptedAes:
-                AesCipherizer cipherizer = new AesCipherizer();
-                messageDecrypted = cipherizer.aes_decryptMessage(messageByte, secretKeyAes);
+                if (secretKeyAes != null) {
+                    AesCipherizer cipherizer = new AesCipherizer();
+                    messageDecrypted = cipherizer.aes_decryptMessage(messageByte, secretKeyAes);
+                }
                 break;
 
             case PlainText:
@@ -132,12 +149,16 @@ public class MessageManager {
                 Message echoResponse = createAnswer(message);
                 Send(echoResponse);
                 break;
+
+            case RsaKeyRequest:
+                KeyManager.getKeyManager().doPairing(context, bltThread.getBtDevice());
+
+                break;
         }
     }
 
     public Message createAnswer(Message message) {
         Message msg = new Message();
-
 
         switch (message.getType()) {
             case EchoRequest:
@@ -208,6 +229,7 @@ public class MessageManager {
         JsonSerializer serializer = new JsonSerializer();
         String messageSerialized = serializer.SerializeToJson(message);
         byte[] messageData = null;
+
 
         //encrypt message
         switch (message.getEncryption()) {

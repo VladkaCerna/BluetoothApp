@@ -1,6 +1,8 @@
 package bltconnectiontest;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import java.util.List;
 
 public class MyDevicesActivity extends AppCompatActivity {
 
+    private Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,8 +27,7 @@ public class MyDevicesActivity extends AppCompatActivity {
         if (config.getName() != null) {
             displaySavedDevices(this, config);
         }
-        startSensorService(this);
-        plusBtnOnClick();
+        plusBtnOnClick(this);
         minusBtnOnClick(this);
     }
 
@@ -46,16 +49,16 @@ public class MyDevicesActivity extends AppCompatActivity {
     }
 
     private void startSensorService(Context context) {
-        Intent mIntent = new Intent(context, SensorService.class);
-        startService(mIntent);
-        //finish();
+        intent = new Intent(context, SensorService.class);
+        startService(intent);
     }
 
-    private void plusBtnOnClick() {
+    private void plusBtnOnClick(final Context context) {
         ImageButton plusBtn = findViewById(R.id.plusBtn);
         plusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                MessageManager.GetMananager(context).connect();
                 searchingWindowShow();
             }
         });
@@ -66,25 +69,38 @@ public class MyDevicesActivity extends AppCompatActivity {
         minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                stopService(intent);
+                MessageManager messageManager = MessageManager.GetMananager(activity);
+                messageManager.disconnect();
                 ConfigManager configManager = new ConfigManager();
                 Config config = configManager.getConfig(activity);
                 config.setName("");
                 config.setAddress(null);
                 config.setAesKey(null);
                 configManager.setConfig(activity, config);
-
+                messageManager.setSecretKeyAes(null);
                 displaySavedDevices(activity, config);
             }
         });
     }
 
     private void displaySavedDevices(Activity activity, Config config) {
-        if (config.getName() != null) {
+        ListView mListView = activity.findViewById(R.id.listView);
+        if (config.getName() != null && config.getName() != "") {
             List<String> devicesList = Arrays.asList(config.getName());
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(activity, R.layout.devices_list_view, devicesList);
-            ListView mListView = activity.findViewById(R.id.listView);
+            mListView = activity.findViewById(R.id.listView);
             mListView.setAdapter(arrayAdapter);
+
+            startSensorService(this);
+        } else {
+            mListView.setAdapter(null);
         }
     }
+
+//    private void startSensorService(Context context) {
+//        Intent mIntent = new Intent(context, SensorService.class);
+//        startService(mIntent);
+//    }
 
 }

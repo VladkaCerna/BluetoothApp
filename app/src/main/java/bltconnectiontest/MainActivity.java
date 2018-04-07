@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
             registerDevicesButton(this);
             registerSettingsButton(this);
-            startSensorService(this);
+            //startSensorService(this);
         }
     }
 
@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startSensorService(Context context) {
-        Intent mIntent = new Intent(context, SensorService.class);
-        startService(mIntent);
-    }
+//    private void startSensorService(Context context) {
+//        Intent mIntent = new Intent(context, SensorService.class);
+//        startService(mIntent);
+//    }
 
     private void getPermission(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

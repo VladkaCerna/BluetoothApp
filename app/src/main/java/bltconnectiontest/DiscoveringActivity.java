@@ -56,7 +56,7 @@ public class DiscoveringActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         BtAdapter.cancelDiscovery();
-        //unregisterReceiver(mReceiver);
+        unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class DiscoveringActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        unregisterReceiver(mReceiver);
+        //unregisterReceiver(mReceiver);
         Intent mIntent = new Intent(this, MyDevicesActivity.class);
         startActivity(mIntent);
     }

@@ -1,15 +1,19 @@
 <resources>
     <string name="app_name">BltApp</string>
-    <string name="sparovana_zarizeni">Sparovane zarizeni</string>
-    <string name="nalezena_zarizeni">Nalezena zarizeni</string>
-    <string name="do_you_want_to_lock">Do you want to lock?</string>
-    <string name="ano">Ano</string>
-    <string name="ne">Ne</string>
-    <string name="Pozdeji">Pozdeji</string>
+    <string name="sparovana_zarizeni">Paired devices</string>
+    <string name="nalezena_zarizeni">Devices in range</string>
+    <string name="do_you_want_to_lock">Lock your computer?</string>
+    <string name="ano">YES</string>
+    <string name="ne">NO</string>
+    <string name="Pozdeji">LATER</string>
     <string name="password">password</string>
     <string name="zadejte_heslo">Zadejte heslo</string>
-    <string name="pozdeji">Pozdeji</string>
+    <string name="pozdeji">LATER</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="unlock">Unlock?</string>
+    <string name="lock_desktop">Desktop lock</string>
+    <string name="pull_see_options">Pull to see buttons</string>
+
 
     <!-- Strings related to Settings -->
 
