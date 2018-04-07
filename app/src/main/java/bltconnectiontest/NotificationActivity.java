@@ -14,41 +14,42 @@ import android.view.View;
 import android.widget.Button;
 
 public class NotificationActivity extends AppCompatActivity {
-    SensorService mService;
+    //SensorService mService;
     boolean mBound = false;
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            SensorService.LocalBinder binder = (SensorService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
+//    private ServiceConnection mConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName className,
+//                                       IBinder service) {
+//            SensorService.LocalBinder binder = (SensorService.LocalBinder) service;
+//            mService = binder.getService();
+//            mBound = true;
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName arg0) {
+//            mBound = false;
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
-        Intent intent = new Intent(this, SensorService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        //Helpers.showToast(this, "Pruhledna aktivita");
         popUpWindowShow(this);
+        //bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        //Helpers.showToast(this, "Pruhledna aktivita");
     }
 
     private void popUpWindowShow(final Context context) {
-        AlertDialog.Builder mLockDialog = new AlertDialog.Builder(this);
+        AlertDialog.Builder mLockDialog = new AlertDialog.Builder(context);
 
         mLockDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                mService.registerSensorListener();
+                Intent intent = new Intent(context, SensorService.class);
+                startService(intent);
+                //mService.registerSensorListener();
                 finish();
             }
         });
@@ -65,40 +66,44 @@ public class NotificationActivity extends AppCompatActivity {
         mBtnYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mService.unregisterSensorListener();
-                dialog.cancel();
-                sendLockRequest(context);
+                //mService.unregisterSensorListener();
+                dialog.dismiss();
+                //sendLockRequest(context);
                 Intent intent = new Intent(context, LockIntentService.class);
                 context.startService(intent);
                 //mService.showUnlockNotification();
+                //mService.onDestroy();
+                //mService.unbindService(mConnection);
                 finish();
             }
         });
         mBtnNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.cancel();
+                dialog.dismiss();
                 //mService.registerSensorListener();
+                Intent intent = new Intent(context, SensorService.class);
+                startService(intent);
                 finish();
             }
         });
         mBtnMaybe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.cancel();
-                mService.unregisterSensorListener();
+                dialog.dismiss();
+                //mService.unregisterSensorListener();
                 Intent intent = new Intent(context, LaterNotificationIntentService.class);
-                context.startService(intent);
+                startService(intent);
                 //mService.showLaterNotification();
                 finish();
             }
         });
     }
 
-    void sendLockRequest(Context context){
-        String phoneId = new ConfigManager().getConfig(context).getPhoneId();
-        MessageManager messageManager = MessageManager.GetMananager(context);
-        Message message = messageManager.createLockRequest(phoneId);
-        messageManager.Send(message);
-    }
+//    void sendLockRequest(Context context){
+//        String phoneId = new ConfigManager().getConfig(context).getPhoneId();
+//        MessageManager messageManager = MessageManager.GetMananager(context);
+//        Message message = messageManager.createLockRequest(phoneId);
+//        messageManager.Send(message);
+//    }
 }

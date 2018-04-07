@@ -29,7 +29,6 @@ public class UnlockNotificationIntentService extends IntentService {
         serviceIntent.putExtra("ID", notificationId);
         PendingIntent actionIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
 
-        //PendingIntent deleteIntent = createOnDismissedIntentUnlock(this, notificationId);
         Intent thisIntent = new Intent(this, UnlockNotificationIntentService.class);
         PendingIntent deleteIntent = PendingIntent.getService(this, 0, thisIntent, 0);
 

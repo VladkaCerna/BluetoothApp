@@ -58,13 +58,15 @@ public class MessageManager {
 
     public void disconnect() {
             bltThread.setShutdownFlag(true);
-            try {
-                bltThread.mSocket.close();
-                bltThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (bltThread.mSocket != null) {
+                try {
+                    bltThread.mSocket.close();
+                    bltThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             bltThread = null;
     }

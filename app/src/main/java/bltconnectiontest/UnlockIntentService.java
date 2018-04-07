@@ -20,6 +20,9 @@ public class UnlockIntentService extends IntentService {
             MessageManager messageManager = MessageManager.GetMananager(this);
             Message unlockRequest = messageManager.createUnlockRequest(config.getPhoneId());
             messageManager.Send(unlockRequest);
+
+            Intent intent1 = new Intent(this, SensorService.class);
+            startService(intent1);
         }
     }
 }

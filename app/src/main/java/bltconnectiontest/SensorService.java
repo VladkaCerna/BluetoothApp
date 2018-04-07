@@ -47,15 +47,15 @@ public class SensorService extends Service implements SensorEventListener {
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         motionSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION);
-        mTriggerEventListener = new TriggerEventListener() {
-            @Override
-            public void onTrigger(TriggerEvent event) {
-                //mSensorManager.requestTriggerSensor(mTriggerEventListener, motionSensor);
-                //Intent mIntent = new Intent(SensorService.this, NotificationActivity.class);
-                //startActivity(mIntent);
-            }
-        };
-        mSensorManager.requestTriggerSensor(mTriggerEventListener, motionSensor);
+//        mTriggerEventListener = new TriggerEventListener() {
+//            @Override
+//            public void onTrigger(TriggerEvent event) {
+//                //mSensorManager.requestTriggerSensor(mTriggerEventListener, motionSensor);
+//                //Intent mIntent = new Intent(SensorService.this, NotificationActivity.class);
+//                //startActivity(mIntent);
+//            }
+//        };
+//        mSensorManager.requestTriggerSensor(mTriggerEventListener, motionSensor);
         registerSensorListener();
 
         //Helpers.showToast(this, "Service turned on");
@@ -83,21 +83,17 @@ public class SensorService extends Service implements SensorEventListener {
                     if (steps > 1)
                     {
                         steps = 0;
-                        mSensorManager.unregisterListener(this);
+                        unregisterSensorListener();
                         Intent mIntent = new Intent(this, NotificationActivity.class);
                         startActivity(mIntent);
+                        stopSelf();
                     }
                 } else {
                     steps = 0;
                 }
                 timeStamp = currentTime;
             //}
-        } else if (sensor.getType() == Sensor.TYPE_SIGNIFICANT_MOTION) {
-
-        } else {
-
         }
-
     }
 
     @Override
