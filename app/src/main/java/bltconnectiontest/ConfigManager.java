@@ -24,19 +24,36 @@ public class ConfigManager {
     private final String FILE_NAME = "configuration.dat";
 
     public ConfigManager() {
+    }
 
+    public Config getConfig(Context context) {
+        File file = new File(context.getFilesDir(), FILE_NAME);
+
+        //if file does not exist, return null
+        if (file == null) {
+            return null;
+            // read file to config structure and return
+        } else {
+            String path = file.getAbsolutePath();
+            Config config = new Config();
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+                String line = bufferedReader.readLine();
+                JsonSerializer serializer = new JsonSerializer();
+                config = (Config) serializer.DeserializeFromJson(line, Config.class);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return config;
+        }
     }
 
     public void setConfig(Context context, Config config) {
-//        Gson gson = new Gson();
-//
-//
-//        //if file does not exist, create new one
-//        String configSerialized = gson.toJson(config);
-
         JsonSerializer serializer = new JsonSerializer();
         String configSerialized = serializer.SerializeToJson(config);
-        if (!Arrays.asList(context.fileList()).contains(FILE_NAME)){
+        if (!Arrays.asList(context.fileList()).contains(FILE_NAME)) {
             new File(context.getFilesDir(), FILE_NAME);
         }
 
@@ -49,32 +66,6 @@ public class ConfigManager {
             fileOutputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public Config getConfig (Context context){
-        File file = new File(context.getFilesDir(), FILE_NAME);
-
-        //if file does not exist, return null
-        if (file == null) {
-            return null;
-        // read file to config structure and return
-        } else {
-            String path = file.getAbsolutePath();
-            Config config = new Config();
-            try {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
-                String line = bufferedReader.readLine();
-//                Gson gson = new Gson();
-//                config = gson.fromJson(bufferedReader, Config.class);
-                JsonSerializer serializer = new JsonSerializer();
-                config = (Config) serializer.DeserializeFromJson(line, Config.class);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return config;
         }
     }
 }

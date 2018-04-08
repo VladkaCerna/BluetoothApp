@@ -2,14 +2,15 @@ package bltconnectiontest;
 
 /**
  * Created by cernav1 on 26.3.2018.
+ * <p>
+ * Model for echo response message
  */
-// model for echo response message
-public class EchoResponse implements IResponse{
+
+public class EchoResponse implements IResponse {
     private String phoneId;
     private String randomString;
 
     public EchoResponse() {
-
     }
 
     public EchoResponse(String phoneId, String randomString) {

@@ -1,5 +1,7 @@
 package bltconnectiontest;
 
+import java.util.Locale;
+
 import flexjson.transformer.AbstractTransformer;
 
 import static java.security.AccessController.getContext;
@@ -11,13 +13,10 @@ import static java.security.AccessController.getContext;
 public class ByteTransformer extends AbstractTransformer {
     @Override
     public void transform(Object object) {
-        if(object instanceof Byte)
-        {
-            String val = String.format("%d", (byte)object & 0xFF);
+        if (object instanceof Byte) {
+            String val = String.format(Locale.getDefault(),"%d", (byte) object & 0xFF);
             getContext().write(val);
-        }
-        else
-        {
+        } else {
             getContext().writeQuoted(object.toString());
         }
     }

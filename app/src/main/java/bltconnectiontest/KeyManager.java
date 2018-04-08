@@ -1,13 +1,9 @@
 package bltconnectiontest;
 
 import android.app.Activity;
-import android.app.UiAutomation;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
-
-import org.bouncycastle.jcajce.provider.symmetric.ARC4;
 
 import java.util.concurrent.TimeoutException;
 
@@ -39,11 +35,7 @@ public class KeyManager {
             config = configManager.getConfig(context);
         }
 
-        if (config.getAesKey() == null || config.getAesKey().equals("") || !config.getAddress().equals(device.getAddress())) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(config.getAesKey() == null || config.getAesKey().equals("") || !config.getAddress().equals(device.getAddress()));
     }
 
     public void doPairing(final Context context, final BluetoothDevice device) {
@@ -56,7 +48,7 @@ public class KeyManager {
     }
 
     public void processKeyExchange(final Context context, BluetoothDevice device) {
-        MessageManager messageManager = MessageManager.GetMananager(context);
+        MessageManager messageManager = MessageManager.getMananager(context);
         Message rsaKeyResponseMsg;
         Message echoResponseMsg;
 
@@ -64,10 +56,10 @@ public class KeyManager {
         Config config = configManager.getConfig(context);
         String phoneId = config.getPhoneId();
 
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             //RSA public key exchange
             Message rsaKeyRequestMsg = messageManager.createRsaKeyRequest(phoneId);
-            messageManager.Send(rsaKeyRequestMsg);
+            messageManager.send(rsaKeyRequestMsg);
             try {
                 messageManager.timeoutWait(Message.PayloadType.RsaKeyResponse, 5000);
                 rsaKeyResponseMsg = messageManager.getMessageFromQueue(Message.PayloadType.RsaKeyResponse);
@@ -78,25 +70,25 @@ public class KeyManager {
 
             //AES key exchange
             Message aesKeyRequestMsg = messageManager.createAesKeyRequest(phoneId);
-            messageManager.Send(aesKeyRequestMsg);
+            messageManager.send(aesKeyRequestMsg);
 
             //wait until message is delivered
             messageManager.wait(1000);
 
             //send echo message
             Message echoRequestMsg = messageManager.createEchoRequest(phoneId);
-            messageManager.Send(echoRequestMsg);
+            messageManager.send(echoRequestMsg);
             try {
                 messageManager.timeoutWait(Message.PayloadType.EchoResponse, 5000);
                 echoResponseMsg = messageManager.getMessageFromQueue(Message.PayloadType.EchoResponse);
-                String echoRequestString = ((EchoRequest)echoRequestMsg.getPayload()).getRandomString();
-                String echoResponseString = ((EchoResponse)echoResponseMsg.getPayload()).getRandomString();
-                if(echoRequestString.equals(echoResponseString)) {
+                String echoRequestString = ((EchoRequest) echoRequestMsg.getPayload()).getRandomString();
+                String echoResponseString = ((EchoResponse) echoResponseMsg.getPayload()).getRandomString();
+                if (echoRequestString.equals(echoResponseString)) {
                     config.setName(device.getName());
                     config.setAddress(device.getAddress());
-                    byte[] key = MessageManager.GetMananager(context).getSecretKeyAes();
+                    byte[] key = MessageManager.getMananager(context).getSecretKeyAes();
                     config.setAesKey(Base64.encodeToString(key, Base64.NO_WRAP));
-                    configManager.setConfig(context,config);
+                    configManager.setConfig(context, config);
 
 //                    ((Activity)context).runOnUiThread(new Runnable() {
 //                        public void run() {
@@ -112,7 +104,7 @@ public class KeyManager {
             }
         }
 
-        ((Activity)context).runOnUiThread(new Runnable() {
+        ((Activity) context).runOnUiThread(new Runnable() {
             public void run() {
                 Helpers.showToast(context, "UNABLE TO CONNECT");
             }

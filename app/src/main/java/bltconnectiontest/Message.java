@@ -2,9 +2,10 @@ package bltconnectiontest;
 
 /**
  * Created by cernav1 on 13.3.2018.
+ * <p>
+ * Model for message
  */
 
-//message model
 public class Message {
     private MessageFormat encryption;
     private IPayload payload;
@@ -13,25 +14,22 @@ public class Message {
     public Message() {
     }
 
-    public Message(MessageFormat encryption)
-    {
+    public Message(MessageFormat encryption) {
         this.encryption = encryption;
     }
 
-    public enum MessageFormat
-    {
-        EncryptedAes    (0xFF),
-        EncryptedRsa    (0xF0),
-        PlainText       (0x00);
+    public enum MessageFormat {
+        EncryptedAes(0xFF),
+        EncryptedRsa(0xF0),
+        PlainText(0x00);
 
         private final byte byteId;
 
         MessageFormat(int id) {
-            byteId = (byte)id;
+            byteId = (byte) id;
         }
 
-        public byte getId()
-        {
+        public byte getId() {
             return byteId;
         }
 
@@ -44,21 +42,19 @@ public class Message {
             }
             throw new IllegalArgumentException("Invalid input byte");
         }
-
     }
 
-    public enum PayloadType
-    {
-        LockRequest         (1),
-        UnlockRequest       (2),
-        RsaKeyRequest       (3),
-        AesKeyRequest       (4),
-        EchoRequest         (5),
-        LockResponse        (10),
-        UnlockResponse      (20),
-        RsaKeyResponse      (30),
-        AesKeyResponse      (40),
-        EchoResponse        (50);
+    public enum PayloadType {
+        LockRequest(1),
+        UnlockRequest(2),
+        RsaKeyRequest(3),
+        AesKeyRequest(4),
+        EchoRequest(5),
+        LockResponse(10),
+        UnlockResponse(20),
+        RsaKeyResponse(30),
+        AesKeyResponse(40),
+        EchoResponse(50);
 
         private final int id;
 
@@ -66,8 +62,7 @@ public class Message {
             this.id = id;
         }
 
-        public int getId()
-        {
+        public int getId() {
             return this.id;
         }
     }
@@ -98,8 +93,8 @@ public class Message {
 
     public String toString() {
         String ret = String.format("Message encyption: %s \n", encryption)
-                        + String.format("Message payload: \n  %s", payload.toString())
-                        + String.format("Request type: %s \n", type);
+                + String.format("Message payload: \n  %s", payload.toString())
+                + String.format("Request type: %s \n", type);
         return ret;
     }
 }

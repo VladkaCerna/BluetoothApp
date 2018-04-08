@@ -1,13 +1,11 @@
 package bltconnectiontest;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.Base64;
 
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 
 import java.io.IOException;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -18,61 +16,26 @@ import java.util.concurrent.TimeoutException;
  */
 
 public class MessageManager {
-    private static BluetoothThread bltThread = null;
     private static MessageManager inst = null;
+
+    private static BluetoothThread bltThread = null;
     private static ArrayList<Message> messageQueue;
     private static byte[] secretKeyAes;
     private static AsymmetricKeyParameter publicKeyRsa;
     private static Context context;
-//    private static Handler handler;
 
     //implements singleton pattern
     private MessageManager(Context context) {
         messageQueue = new ArrayList<>();
-        this.context = context;
+        MessageManager.context = context;
     }
 
-    public static MessageManager GetMananager(Context context) {
+    public static MessageManager getMananager(Context context) {
         if (inst == null) {
             inst = new MessageManager(context);
         }
 
         return inst;
-    }
-
-//    public void startBltThread() {
-//        bltThread = new BluetoothThread(context);
-//        bltThread.start();
-//    }
-
-    public BluetoothThread getBltThread() {
-        return bltThread;
-    }
-
-    public void connect() {
-        if(bltThread == null) {
-            bltThread = new BluetoothThread(context);
-            bltThread.start();
-        }
-    }
-
-    public void disconnect() {
-            bltThread.setShutdownFlag(true);
-            if (bltThread.mSocket != null) {
-                try {
-                    bltThread.mSocket.close();
-                    bltThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            bltThread = null;
-    }
-
-    public ArrayList<Message> getMessageQue() {
-        return messageQueue;
     }
 
     public byte[] getSecretKeyAes() {
@@ -83,12 +46,34 @@ public class MessageManager {
         secretKeyAes = key;
     }
 
-    public void Send(Message message) {
-        String messageToSend = BuildMessage(message);
+    public void connect() {
+        if (bltThread == null) {
+            bltThread = new BluetoothThread(context);
+            bltThread.start();
+        }
+    }
+
+    public void disconnect() {
+        bltThread.setShutdownFlag(true);
+        if (bltThread.getmSocket() != null) {
+            try {
+                bltThread.getmSocket().close();
+                bltThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        bltThread = null;
+    }
+
+    public void send(Message message) {
+        String messageToSend = buildMessage(message);
 
         if (messageToSend != null) {
             while (true) {
-                if (bltThread.mSocket != null) {
+                if (bltThread.getmSocket() != null) {
                     bltThread.send(messageToSend);
                     break;
                 }
@@ -99,7 +84,7 @@ public class MessageManager {
     }
 
     // decrypt received message and parse to Message object
-    public Message Receive(String response) {
+    public Message receive(String response) {
         Message m = new Message();
 
         //first byte of message indicates whether it is rsa encrypted, aes encrypted or plaintext
@@ -112,11 +97,11 @@ public class MessageManager {
 
         //received messages can be only aes encrypted
         //decrypt or convert byte[] to string
-        switch (Message .MessageFormat.valueOf(messageByteExtended[0])) {
+        switch (Message.MessageFormat.valueOf(messageByteExtended[0])) {
             case EncryptedAes:
                 if (secretKeyAes != null) {
                     AesCipherizer cipherizer = new AesCipherizer();
-                    messageDecrypted = cipherizer.aes_decryptMessage(messageByte, secretKeyAes);
+                    messageDecrypted = cipherizer.decryptMessage(messageByte, secretKeyAes);
                 }
                 break;
 
@@ -149,7 +134,7 @@ public class MessageManager {
 
             case EchoRequest:
                 Message echoResponse = createAnswer(message);
-                Send(echoResponse);
+                send(echoResponse);
                 break;
 
             case RsaKeyRequest:
@@ -164,8 +149,8 @@ public class MessageManager {
 
         switch (message.getType()) {
             case EchoRequest:
-                String phoneId = ((EchoRequest)message.getPayload()).getPhoneId();
-                String randomString = ((EchoRequest)message.getPayload()).getRandomString();
+                String phoneId = ((EchoRequest) message.getPayload()).getPhoneId();
+                String randomString = ((EchoRequest) message.getPayload()).getRandomString();
                 msg = new Message(Message.MessageFormat.EncryptedAes);
                 msg.setType(Message.PayloadType.EchoResponse);
                 msg.setPayload(new EchoResponse(phoneId, randomString));
@@ -180,7 +165,7 @@ public class MessageManager {
 
         //generation of new aes key
         AesCipherizer cipherizer = new AesCipherizer();
-        secretKeyAes = cipherizer.aes_getNewKey(AesCipherizer.AesKeySize.Aes_128);
+        secretKeyAes = cipherizer.getNewKey(AesKeySize.Aes_128);
         String aesKeyBase64 = Base64.encodeToString(secretKeyAes, Base64.NO_WRAP);
 
         //final message will be encrypted with rsa public key
@@ -225,7 +210,7 @@ public class MessageManager {
         return message;
     }
 
-    private String BuildMessage(Message message) {
+    private String buildMessage(Message message) {
         //initialize Json serializer
         byte[] finalMessage;
         JsonSerializer serializer = new JsonSerializer();
@@ -237,7 +222,7 @@ public class MessageManager {
         switch (message.getEncryption()) {
             case EncryptedAes:
                 AesCipherizer aesCipherizer = new AesCipherizer();
-                messageData = aesCipherizer.aes_encryptMessage(messageSerialized, secretKeyAes);
+                messageData = aesCipherizer.encryptMessage(messageSerialized, secretKeyAes);
                 break;
             case PlainText:
                 messageData = messageSerialized.getBytes();
@@ -279,7 +264,7 @@ public class MessageManager {
         throw new TimeoutException("Timeout was reached while waiting for " + type.toString());
     }
 
-    public void wait (int millis) {
+    public void wait(int millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
@@ -296,15 +281,4 @@ public class MessageManager {
         }
         return null;
     }
-
-//    private Runnable runn = new Runnable() {
-//        @Override
-//        public void run() {
-//            if(bltThread.mSocket.isConnected()) {
-//                bltThread = new BluetoothThread(context);
-//                bltThread.start();
-//            }
-//            handler.postDelayed(this, 500);
-//        }
-//    };
 }

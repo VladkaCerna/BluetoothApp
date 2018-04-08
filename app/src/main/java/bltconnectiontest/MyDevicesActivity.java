@@ -1,8 +1,6 @@
 package bltconnectiontest;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -58,7 +56,7 @@ public class MyDevicesActivity extends AppCompatActivity {
         plusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MessageManager.GetMananager(context).connect();
+                MessageManager.getMananager(context).connect();
                 searchingWindowShow();
             }
         });
@@ -70,7 +68,7 @@ public class MyDevicesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stopService(intent);
-                MessageManager messageManager = MessageManager.GetMananager(activity);
+                MessageManager messageManager = MessageManager.getMananager(activity);
                 messageManager.disconnect();
                 ConfigManager configManager = new ConfigManager();
                 Config config = configManager.getConfig(activity);
@@ -97,10 +95,4 @@ public class MyDevicesActivity extends AppCompatActivity {
             mListView.setAdapter(null);
         }
     }
-
-//    private void startSensorService(Context context) {
-//        Intent mIntent = new Intent(context, SensorService.class);
-//        startService(mIntent);
-//    }
-
 }

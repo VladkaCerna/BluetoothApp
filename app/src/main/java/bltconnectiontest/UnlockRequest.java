@@ -2,9 +2,11 @@ package bltconnectiontest;
 
 /**
  * Created by cernav1 on 13.3.2018.
+ *
+ * Model for unlock request
+ *
  */
 
-//model for unlock request
 public class UnlockRequest implements IRequest {
     private String PhoneId;
 

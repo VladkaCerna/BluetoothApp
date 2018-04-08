@@ -17,9 +17,9 @@ public class UnlockIntentService extends IntentService {
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.cancel(intent.getIntExtra("ID", 1));
             Config config = new ConfigManager().getConfig(this);
-            MessageManager messageManager = MessageManager.GetMananager(this);
+            MessageManager messageManager = MessageManager.getMananager(this);
             Message unlockRequest = messageManager.createUnlockRequest(config.getPhoneId());
-            messageManager.Send(unlockRequest);
+            messageManager.send(unlockRequest);
 
             Intent intent1 = new Intent(this, SensorService.class);
             startService(intent1);

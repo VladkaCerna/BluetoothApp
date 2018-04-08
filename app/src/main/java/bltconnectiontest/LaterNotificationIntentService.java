@@ -31,7 +31,7 @@ public class LaterNotificationIntentService extends IntentService {
         PendingIntent actionIntent = PendingIntent.getService(this, 0, serviceIntent, 0);
         PendingIntent deleteIntent = createOnDismissedIntentLaterBtn(this, notificationId);
 
-        Notification mNotification  = new Notification.Builder(this)
+        Notification mNotification = new Notification.Builder(this)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_action_name))
                 .setSmallIcon(R.drawable.ic_action_name)
                 .setContentTitle(getString(R.string.lock_desktop))

@@ -2,9 +2,10 @@ package bltconnectiontest;
 
 /**
  * Created by cernav1 on 13.3.2018.
+ * <p>
+ * Model for lock request message
  */
 
-// model for lock request message
 public class LockRequest implements IRequest {
     private String phoneId;
 

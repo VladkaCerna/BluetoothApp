@@ -37,10 +37,6 @@
         <receiver
             android:name=".NotificationDismissedReceiver"
             android:exported="false" />
-
-        <service
-            android:name=".BtCommIntentService"
-            android:exported="false" />
         <service
             android:name=".UnlockIntentService"
             android:exported="false" />

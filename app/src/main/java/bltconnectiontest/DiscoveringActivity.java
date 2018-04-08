@@ -25,7 +25,6 @@ public class DiscoveringActivity extends AppCompatActivity {
     private static final int REQUEST_BLUETOOTH = 1;
     private BluetoothAdapter BtAdapter;
     private ArrayList<BluetoothDevice> BtDevices;
-    public static ArrayList<MyDevice> SavedBtDevices;
     private BluetoothDevice selectedDevice;
     private final List<Integer> computerDevices = Arrays.asList(Device.COMPUTER_DESKTOP, Device.COMPUTER_HANDHELD_PC_PDA,
             Device.COMPUTER_LAPTOP, Device.COMPUTER_PALM_SIZE_PC_PDA, Device.COMPUTER_SERVER, Device.COMPUTER_UNCATEGORIZED,
@@ -41,8 +40,7 @@ public class DiscoveringActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        SavedBtDevices = new ArrayList<>();
-        searchBtnOnClick(this);
+        searchBtnOnClick();
         bluetoothSearchForDevices();
     }
 
@@ -62,20 +60,16 @@ public class DiscoveringActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //unregisterReceiver(mReceiver);
-        //Helpers.killAppSafely();
     }
 
     @Override
     protected void onStop() {
-        //unregisterReceiver(mReceiver);
         super.onStop();
         finish();
     }
 
     @Override
     public void onBackPressed() {
-        //unregisterReceiver(mReceiver);
         Intent mIntent = new Intent(this, MyDevicesActivity.class);
         startActivity(mIntent);
     }
@@ -88,27 +82,23 @@ public class DiscoveringActivity extends AppCompatActivity {
                 if (state == BluetoothAdapter.STATE_ON) {
                     BtAdapter.startDiscovery();
                 }
-            }
-            else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 ListView mListView = findViewById(R.id.listView2);
                 mListView.setAdapter(null);
                 BtDevices = new ArrayList<>();
-            }
-            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-            }
-            else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // When discovery finds a device
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
                 int btDeviceType = device.getBluetoothClass().getDeviceClass();
-                if(computerDevices.contains(btDeviceType)) {
+                if (computerDevices.contains(btDeviceType)) {
                     BtDevices.add(device);
                 }
 
                 List<String> mList = new ArrayList<>();
-                for (BluetoothDevice bd: BtDevices)
-                {
+                for (BluetoothDevice bd : BtDevices) {
                     mList.add(bd.getName());
                 }
                 ArrayAdapter<String> BtArrayAdapter = new ArrayAdapter<>(context, R.layout.devices_list_view, mList);
@@ -119,7 +109,7 @@ public class DiscoveringActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
                         TextView textView = view.findViewById(R.id.txtV);
-                        for(BluetoothDevice d: BtDevices) {
+                        for (BluetoothDevice d : BtDevices) {
                             if (d.getName().equals(textView.getText().toString()))
                                 selectedDevice = d;
                         }
@@ -130,19 +120,20 @@ public class DiscoveringActivity extends AppCompatActivity {
                             keyManager.doPairing(context, selectedDevice);
                         }
                         BtAdapter.cancelDiscovery();
-                    }});
+                    }
+                });
             }
         }
     };
 
     private void bluetoothSearchForDevices() {
-            if (!BtAdapter.isEnabled()) {
-                Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBT, REQUEST_BLUETOOTH);
-            } else {
-                BtAdapter.startDiscovery();
-            }
-            registerReceiver();
+        if (!BtAdapter.isEnabled()) {
+            Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBT, REQUEST_BLUETOOTH);
+        } else {
+            BtAdapter.startDiscovery();
+        }
+        registerReceiver();
     }
 
     private IntentFilter getNewFilter() {
@@ -155,13 +146,12 @@ public class DiscoveringActivity extends AppCompatActivity {
         return filter;
     }
 
-    private void searchBtnOnClick(final Context context) {
+    private void searchBtnOnClick() {
         ImageButton searchBtn = findViewById(R.id.searchBtn);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (BtAdapter.isDiscovering())
-                {
+                if (BtAdapter.isDiscovering()) {
                     BtAdapter.cancelDiscovery();
                 }
                 BtAdapter.startDiscovery();
@@ -169,7 +159,7 @@ public class DiscoveringActivity extends AppCompatActivity {
         });
     }
 
-    private void registerReceiver(){
+    private void registerReceiver() {
         IntentFilter mFilter = getNewFilter();
         registerReceiver(mReceiver, mFilter);
     }

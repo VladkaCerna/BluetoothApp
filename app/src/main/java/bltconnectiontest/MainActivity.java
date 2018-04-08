@@ -25,11 +25,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.welcome_screen);
 
 
-        if (!isBtAdapterAvailable()){
+        if (!isBtAdapterAvailable()) {
             Helpers.showToast(this, "NO BLUETOOTH ADAPTER FOUND.");
-            //finish();
-            //System.exit(0);
-            //Helpers.killAppSafely(this);
         } else {
             getPermission(this);
             enableBluetoothAdapter();
@@ -40,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
                 config.setPhoneId(UUID.randomUUID().toString());
                 configManager.setConfig(this, config);
             }
-            //Helpers.showToast(this, config.getPhoneId());
-            MessageManager messageManager = MessageManager.GetMananager(this);
 
-            if(config.getAesKey() != null) {
+            MessageManager messageManager = MessageManager.getMananager(this);
+
+            if (config.getAesKey() != null) {
                 byte[] key = Base64.decode(config.getAesKey(), Base64.NO_WRAP);
                 messageManager.setSecretKeyAes(key);
             }
@@ -52,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
             registerDevicesButton(this);
             registerSettingsButton(this);
-            //startSensorService(this);
         }
     }
 
@@ -67,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private boolean isBtAdapterAvailable (){
+    private boolean isBtAdapterAvailable() {
         BluetoothAdapter BtAdapter = BluetoothAdapter.getDefaultAdapter();
         boolean result = false;
-        if (BtAdapter != null){
+        if (BtAdapter != null) {
             result = true;
         }
         return result;
@@ -83,11 +79,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(enableBT);
         }
     }
-
-//    private void startSensorService(Context context) {
-//        Intent mIntent = new Intent(context, SensorService.class);
-//        startService(mIntent);
-//    }
 
     private void getPermission(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -125,5 +116,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 }

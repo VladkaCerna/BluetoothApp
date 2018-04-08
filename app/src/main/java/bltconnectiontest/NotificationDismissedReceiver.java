@@ -10,6 +10,5 @@ public class NotificationDismissedReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Intent mIntent = new Intent(context, SensorService.class);
         context.startService(mIntent);
-        //Helpers.showToast(context, "Receiver called");
     }
 }

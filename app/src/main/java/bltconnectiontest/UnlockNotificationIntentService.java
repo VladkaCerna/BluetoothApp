@@ -58,15 +58,4 @@ public class UnlockNotificationIntentService extends IntentService {
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.notify(notificationId, mNotification);
     }
-
-    private PendingIntent createOnDismissedIntentUnlock(Context context, int notificationId) {
-        Intent intent = new Intent(context, UnlockNotificationDismissedReceiver.class);
-        intent.putExtra("notificationId", notificationId);
-
-        PendingIntent pendingIntent =
-                PendingIntent.getBroadcast(context.getApplicationContext(),
-                        notificationId, intent, 0);
-        return pendingIntent;
-    }
-
 }

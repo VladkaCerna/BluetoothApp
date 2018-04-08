@@ -1,13 +1,9 @@
 package bltconnectiontest;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +17,7 @@ import java.util.UUID;
 public class BluetoothThread extends Thread {
 
     private Context context;
-    public BluetoothSocket mSocket;
+    private BluetoothSocket mSocket;
     public String address = "A4:34:D9:FC:72:17";
     private BluetoothDevice BtDevice;
     private final UUID MY_UUID = UUID.fromString("60caf2ae-c940-4610-8d06-da4fd80b80ef");
@@ -32,6 +28,18 @@ public class BluetoothThread extends Thread {
 
     public BluetoothThread(Context context) {
         this.context = context;
+    }
+
+    public boolean isShutdownFlag() {
+        return shutdownFlag;
+    }
+
+    public void setShutdownFlag(boolean shutdownFlag) {
+        this.shutdownFlag = shutdownFlag;
+    }
+
+    public BluetoothSocket getmSocket() {
+        return mSocket;
     }
 
     public BluetoothDevice getBtDevice() {
@@ -81,8 +89,8 @@ public class BluetoothThread extends Thread {
 
                                 final String response = in.readLine();
                                 if (response != null) {
-                                    MessageManager messageManager = MessageManager.GetMananager(this.context);
-                                    Message msg = messageManager.Receive(response);
+                                    MessageManager messageManager = MessageManager.getMananager(this.context);
+                                    Message msg = messageManager.receive(response);
                                     if (msg.getType() == Message.PayloadType.EchoRequest || msg.getType() == Message.PayloadType.RsaKeyRequest) {
                                         messageManager.processMessage(msg);
                                     }
@@ -95,13 +103,5 @@ public class BluetoothThread extends Thread {
                 }
             }
         }
-    }
-
-    public boolean isShutdownFlag() {
-        return shutdownFlag;
-    }
-
-    public void setShutdownFlag(boolean shutdownFlag) {
-        this.shutdownFlag = shutdownFlag;
     }
 }

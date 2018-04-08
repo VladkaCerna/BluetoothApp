@@ -36,29 +36,11 @@ import android.util.Base64;
  */
 
 public class RsaCipherizer {
-    public enum RsaKeySize
-    {
-        Rsa_1024 (1024),
-        Rsa_2048 (2048),
-        Rsa_4096 (4096);
 
-        private final int id;
-
-        RsaKeySize(int id) {
-            this.id = id;
-        }
-
-        public int getId()
-        {
-            return this.id;
-        }
+    public RsaCipherizer() {
     }
 
-    public RsaCipherizer(){
-
-    }
-
-    public AsymmetricCipherKeyPair GetNewKeyPair(RsaKeySize keySize) {
+    public AsymmetricCipherKeyPair getNewKeyPair(RsaKeySize keySize) {
         final int CERTAINTY = 80;
         BigInteger publicExponent = new BigInteger("10001", 16);
         SecureRandom random = null;
@@ -67,7 +49,7 @@ public class RsaCipherizer {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        RSAKeyGenerationParameters generationParameters = new RSAKeyGenerationParameters(publicExponent, random, keySize.getId(),CERTAINTY);
+        RSAKeyGenerationParameters generationParameters = new RSAKeyGenerationParameters(publicExponent, random, keySize.getId(), CERTAINTY);
         RSAKeyPairGenerator keyPairGenerator = new RSAKeyPairGenerator();
         keyPairGenerator.init(generationParameters);
         AsymmetricCipherKeyPair keyPair = keyPairGenerator.generateKeyPair();
@@ -82,18 +64,18 @@ public class RsaCipherizer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-         return key;
+        return key;
     }
 
     //converts public key to string
     public static String publicKeyToString(AsymmetricKeyParameter publicKey) {
         String key = null;
 
-        RSAKeyParameters rsaKey=(RSAKeyParameters)publicKey;
-        ASN1EncodableVector encodable=new ASN1EncodableVector();
+        RSAKeyParameters rsaKey = (RSAKeyParameters) publicKey;
+        ASN1EncodableVector encodable = new ASN1EncodableVector();
         encodable.add(new ASN1Integer(rsaKey.getModulus()));
         encodable.add(new ASN1Integer(rsaKey.getExponent()));
-        byte[] keykey = KeyUtil.getEncodedSubjectPublicKeyInfo(new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption,new DERNull()),new DERSequence(encodable));
+        byte[] keykey = KeyUtil.getEncodedSubjectPublicKeyInfo(new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, new DERNull()), new DERSequence(encodable));
         key = Base64.encodeToString(keykey, Base64.NO_WRAP);
 
         return key;
@@ -109,23 +91,22 @@ public class RsaCipherizer {
         byte[] msgEncrypted = new byte[0];
 
         int blockSize = 240;
-        int blockNr = msgByte.length/blockSize + 1;
+        int blockNr = msgByte.length / blockSize + 1;
 
         //encrypts message block by block
-        for (int i = 0; i < blockNr; i++)
-        {
+        for (int i = 0; i < blockNr; i++) {
             byte[] encryptedBlock = null;
             //if the block to be encrypted is not the last
-            if((msgByte.length - blockSize*i)> blockSize) {
+            if ((msgByte.length - blockSize * i) > blockSize) {
                 try {
-                    encryptedBlock = rsaEncoder.processBlock(msgByte, i*blockSize, blockSize);
+                    encryptedBlock = rsaEncoder.processBlock(msgByte, i * blockSize, blockSize);
                 } catch (InvalidCipherTextException e) {
                     e.printStackTrace();
                 }
-            //if the block to be encrypt is the last block in message
+                //if the block to be encrypt is the last block in message
             } else {
                 try {
-                    encryptedBlock = rsaEncoder.processBlock(msgByte, i*blockSize, (msgByte.length-blockSize*i));
+                    encryptedBlock = rsaEncoder.processBlock(msgByte, i * blockSize, (msgByte.length - blockSize * i));
                 } catch (InvalidCipherTextException e) {
                     e.printStackTrace();
                 }
@@ -135,16 +116,15 @@ public class RsaCipherizer {
             System.arraycopy(msgEncrypted, 0, newArray, 0, msgEncrypted.length);
             msgEncrypted = newArray;
 
-            System.arraycopy(encryptedBlock,0 , msgEncrypted, i*blockSize, encryptedBlock.length);
+            System.arraycopy(encryptedBlock, 0, msgEncrypted, i * blockSize, encryptedBlock.length);
         }
 
         return msgEncrypted;
     }
 
-    public String decryptWithPrivateRSA(byte[] msgByte, AsymmetricKeyParameter privateKey){
+    public String decryptWithPrivateRSA(byte[] msgByte, AsymmetricKeyParameter privateKey) {
         RSAEngine rsaEngine = new RSAEngine();
         PKCS1Encoding rsaEncoder = new PKCS1Encoding(rsaEngine);
-
 
         rsaEncoder.init(false, privateKey);
 

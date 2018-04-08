@@ -2,15 +2,15 @@ package bltconnectiontest;
 
 /**
  * Created by cernav1 on 25.3.2018.
+ * <p>
+ * Model for aes key request message
  */
 
-// model for aes key request message
 public class AesKeyRequest implements IRequest {
     private String aesKey;
     private String phoneId;
 
     public AesKeyRequest() {
-
     }
 
     public AesKeyRequest(String aesKey, String phoneId) {

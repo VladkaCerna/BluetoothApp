@@ -17,30 +17,15 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by cernav1 on 12.3.2018.
+ *
  */
 
 public class AesCipherizer {
 
-    public enum AesKeySize {
-        Aes_128(128),
-        Aes_192(192),
-        Aes_256(256);
-
-        private final int id;
-
-        AesKeySize(int id) {
-            this.id = id;
-        }
-
-        public int getId() {
-            return this.id;
-        }
-    }
-
     public AesCipherizer() {
     }
 
-    public byte[] aes_getNewKey(AesKeySize keySize) {
+    public byte[] getNewKey(AesKeySize keySize) {
         KeyGenerator keyGenerator = null;
         try {
             keyGenerator = KeyGenerator.getInstance("AES");
@@ -53,7 +38,7 @@ public class AesCipherizer {
         return key.getEncoded();
     }
 
-    public byte[] aes_encryptMessage(String message, byte[] key) {
+    public byte[] encryptMessage(String message, byte[] key) {
         byte[] messageCombInitVect = null;
         try {
             //init cipherizer
@@ -90,7 +75,7 @@ public class AesCipherizer {
         return messageCombInitVect;
     }
 
-    public String aes_decryptMessage(byte[] encryptedMessage, byte[] secretKeyAes) {
+    public String decryptMessage(byte[] encryptedMessage, byte[] secretKeyAes) {
         byte[] decryptedMessage = null;
         try {
             //create cipherizer
